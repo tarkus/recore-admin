@@ -1,14 +1,14 @@
 {
-  "name": "reco-admin",
+  "name": "recore-admin",
   "version": "0.0.0",
-  "description": "Admin interface for Reco",
-  "main": "index.coffee",
+  "description": "Admin interface for Recore models",
+  "main": "index.js",
   "scripts": {
     "test": "make test"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:tarkus/reco-admin.git"
+    "url": "git@github.com:tarkus/recore-admin.git"
   },
   "keywords": [
     "redis",
@@ -17,18 +17,26 @@
   "author": "Tarkus Liu <tarkus.nnkh@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tarkus/reco-admin/issues"
+    "url": "https://github.com/tarkus/recore-admin/issues"
   },
-  "homepage": "https://github.com/tarkus/reco-admin",
+  "homepage": "https://github.com/tarkus/recore-admin",
+  "dependencies": {
+    "body-parser": "^1.0.2",
+    "compression": "^1.0.2",
+    "connect-assets": "^2.5.3",
+    "cookie-parser": "^1.0.1",
+    "errorhandler": "^1.0.1",
+    "express": "^4.1.1",
+    "express-static-view": "^0.4.1",
+    "express-webapp-view": "^0.4.5",
+    "jade": "^1.3.1",
+    "morgan": "^1.0.1",
+    "serve-favicon": "^2.0.0",
+    "static-favicon": "^2.0.0-alpha",
+    "stylus": "^0.44.0"
+  },
   "devDependencies": {
     "mocha": "^1.18.2",
     "should": "^3.3.1"
-  },
-  "dependencies": {
-    "connect-assets": "^2.5.5",
-    "express": "^4.1.1",
-    "express-webapp-view": "^0.4.5",
-    "jade": "^1.3.1",
-    "stylus": "^0.44.0"
   }
 }

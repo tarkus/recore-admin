@@ -1,0 +1,23 @@
+- if (last > 1)
+  ul.pagination.pagination-sm
+    li(class="#{prev ? '' : 'disabled'}")
+      - if (prev)
+        a(href="#{prev}") «
+      - else
+        | «
+
+    - each link in links
+      li(class="#{link.text == current ? 'active' : ''}")
+        - if (link.href)
+          a(href="#{link.href}") link.text
+        - else
+          link.text
+
+    li(class="#{next ? '' : 'disabled'}")
+      - if (next)
+        a(href="#{next}") »
+      - else
+        | »
+
+- else
+  | &nbsp;

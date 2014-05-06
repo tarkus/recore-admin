@@ -1,0 +1,90 @@
+@import '../components/allmixedup/bootstrap/css/bootstrap.min.css'
+@import 'sb-admin.css'
+
+.clear
+  clear: both
+
+.navbar-brand
+  sup
+    padding-left: 3px
+    font-size: 9px
+    vertical-align: top
+  span
+    font-size: smaller
+    color: #aaa
+
+.sidebar-space
+  height: 20px
+
+.sidebar-collapse
+  h5
+    padding: 6px 10px
+    margin-bottom: 0px
+    color: #aaa
+
+  li
+    &:hover
+      background-color: #eee
+
+    a.record
+      display: inline-block
+      width: 80%
+      span
+        margin-right: 5px
+    a.schema
+      float: right
+      display: inline-block
+      cursor: pointer
+      span
+        margin-left: 4px
+
+.schema
+
+  .modal-body
+    font-family: monospace
+    white-space: pre
+
+  code
+    background-color: transparent
+
+  .id-generator
+    span
+      font-weight: bold
+    code
+      margin-left: 4px
+      color: #666
+      &.function
+        cursor: pointer
+
+  .properties
+  
+    .type
+      code
+        font-weight: bold
+        color: #333
+        font-family: monospace
+      span
+        vertical-align: middle
+      .function
+        cursor: pointer
+
+    .index
+      .fa-bolt
+        color: #CA437B
+      .fa-check
+        color: green
+      .fa-times
+        color: gray
+
+    .default_value
+      font-family: monospace
+      code
+        color: #666
+      .function
+        cursor: pointer
+      .grey
+        color: #bbb
+
+    
+
+

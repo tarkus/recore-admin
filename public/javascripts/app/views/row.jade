@@ -1,0 +1,4 @@
+tr(class="#{odd > 0 ? 'odd' : 'even'}")
+  - each property, name in row.properties 
+    td.property-value
+      code #{name}

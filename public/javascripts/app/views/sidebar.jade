@@ -1,0 +1,20 @@
+.navbar-default.navbar-static-side
+
+  .sidebar-collapse
+    h5 Models
+    ul#side-menu.nav
+      - for name in models
+        li
+          a.record(href="#/record/#{name}")
+            span.fa.fa-table
+            | #{name}
+          a.schema(href="#/schema/#{name}")
+            span.fa.fa-chevron-right
+
+  .sidebar-space
+
+  .sidebar-collapse
+    h5 Collections
+
+
+

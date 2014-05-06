@@ -1,13 +1,13 @@
 build:
-	mkdir -p lib && ./node_modules/.bin/coffee -c -o lib src
+	./node_modules/.bin/coffee -c index.coffee
 
 test:
 	./node_modules/.bin/_mocha --compilers coffee:coffee-script/register --reporter spec
 
 clean:
-	rm -rf lib
+	rm -rf index.js
 
 dev:
-	coffee -wc --bare -o lib src
+	coffee -wc --bare index.coffee
 
 .PHONY: test
