@@ -1,6 +1,6 @@
 {
   "name": "recore-admin",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Admin interface for Recore models",
   "main": "index.js",
   "scripts": {
