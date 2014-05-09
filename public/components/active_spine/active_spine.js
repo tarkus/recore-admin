@@ -161,7 +161,6 @@ Spine.Controller.include({
 
   /*
   init: () ->
-    console.log @stack
    */
   setStack: function(stack) {
     return Spine.Controller.prototype.stack = stack;

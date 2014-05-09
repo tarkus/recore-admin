@@ -35,4 +35,20 @@ html
     var base_uri = "#{base_uri}";
     var title = "#{title}";
     var subtitle = "#{subtitle}";
-    var models = !{models};
+    var models = !{JSON.stringify(models)};
+    var count = !{JSON.stringify(count)};
+
+    function selectText(element) {
+        if (document.selection) {
+            var range = document.body.createTextRange();
+            range.moveToElementText(element);
+            range.select();
+        } else if (window.getSelection) {
+            var range = document.createRange();
+            range.selectNode(element);
+            window.getSelection().addRange(range);
+        }
+    }
+    
+
+    $.fn.datepicker.defaults.format = 'yyyy-mm-dd'

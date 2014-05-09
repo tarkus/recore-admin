@@ -2,9 +2,9 @@ Header     = @app.require 'module header'
 Footer     = @app.require 'module footer'
 Sidebar    = @app.require 'module sidebar'
 
-Dashboard  = @app.require 'module dashboard'
-Schema     = @app.require 'module schema'
-Record     = @app.require 'module record'
+Dashboard  = @app.require 'scene dashboard'
+Schema     = @app.require 'scene schema'
+Record     = @app.require 'scene record'
 
 class Stage extends Spine.Stack
   className: "stage"
@@ -22,7 +22,7 @@ class Stage extends Spine.Stack
     super
     
   #default: 'home'
-class NohmBackend extends Spine.Controller
+class RecoreAdmin extends Spine.Controller
   className: "app"
   
   constructor: ->
@@ -39,21 +39,24 @@ class NohmBackend extends Spine.Controller
 
     @routes
       "/schema/:name": (params) =>
-        @stage.schema.active(params.name)
+        @stage.schema.configure(params.name)
 
       "/record/:name": (params) =>
-        @stage.record.active(params.name)
+        @stage.record.configure(params.name)
 
       "/record/:name/page/:page": (params) =>
-        @stage.record.active(params.name, params.page)
+        @stage.record.configure(params.name, params.page)
 
-      "/*": =>
+      "/": =>
+        @stage.dashboard.active()
+
+      "/(.*)": =>
         @stage.dashboard.active()
 
 $ ->
   moment.lang("zh-cn") if moment
 
-  app = new NohmBackend el: $("#wrapper")
+  app = new RecoreAdmin el: $("#wrapper")
   Spine.Route.setup()
 
   window.App = app

@@ -1,8 +1,27 @@
 @import '../components/allmixedup/bootstrap/css/bootstrap.min.css'
+@import '../components/bootstrap-datepicker/css/datepicker.css'
+@import '../components/bootstrap-datepicker/css/datepicker3.css'
 @import 'sb-admin.css'
+
+body.modal-open
+  margin: 0
+
+.stage > div
+  width: 100%
+  float: left
+
+.stage > *:not(.active)
+  display: none
 
 .clear
   clear: both
+
+.table.table-bordered > thead > tr > th
+  border-bottom-width: 3px 
+
+.space
+  width: 5px
+  display: inline-block
 
 .navbar-brand
   sup
@@ -31,6 +50,9 @@
       width: 80%
       span
         margin-right: 5px
+      .label
+        margin-left: 0.8em
+        background-color: #ccc
     a.schema
       float: right
       display: inline-block
@@ -85,6 +107,133 @@
       .grey
         color: #bbb
 
-    
+.record.container
+  .modal
+    .modal-header
+      h4
+        text-transform: uppercase
 
+    .content
+      font-family: monospace
+      word-wrap: break-word
+      white-space: pre
+      color: #C72549
+
+  .tables
+    position:relative
+
+    .table-responsive
+
+      width: 100%
+
+      table
+
+        th
+          background-color: #fafafa
+
+        tr
+          height: 20px
+
+          &:hover
+            td.record-id
+              background-color: #fafafa
+            td
+              background-color: #FEF1E0
+
+        td
+          max-width: 150px
+          overflow-x: hidden
+          text-overflow: ellipsis
+
+          &.record-id
+            background-color: #fafafa
+
+          /*
+          &.function
+            background: #EDDE45
+
+          &.timestamp
+            background: #EDE5E2
+          */
+
+      .table-records
+        display: inline-block
+        width: 100%
+        overflow-x: scroll
+
+        tr.selected
+          td
+            background-color: #0648cc
+            color: #fafafa
+
+      .table-ids
+        display: inline-block
+        width: 35px
+        max-width: 150px
+        td
+          text-align: center
+          font-weight: bold
+          cursor: pointer
+
+          &.selected
+            background-color: #0648cc !important
+            color: #e6e6e6
+
+
+
+  .actions
+    float: left
+    button 
+      margin: 3px 0px 12px 0px
+      .fa
+        margin-right: 3px
+
+.table
+
+  td.field-name
+    line-height: 2.6
+    font-weight: bold
+    max-width: 250px
+    text-transform: uppercase
+    text-align: right
+
+  td.field-value
+    line-height: 2.6
+    word-wrap: break-word
+    pre
+      margin-bottom: 2px
+      max-width: 600px
+    i
+      color: #999
+
+form
+  .field-name
+    text-transform: uppercase
+    text-align: right
+    vertical-align: baseline
+    line-height: 35px
+    color: #666
+
+  .radio-inline
+    padding-left: 29px
+    line-height: 1.6
+    vertical-align: baseline
+
+    input[type="radio"]
+      margin-left: -18px
+
+.panel
+  .panel-heading
+    font-weight: bold
+  .field-name
+    text-transform: capitalize
+    text-align: right
+  table
+    tr td:last-child
+      max-width: 400px
+      word-wrap: break-word
+      font-family: monospace
+      
+.datepicker
+  z-index: 10000 !important
 

@@ -1,45 +1,37 @@
 class Pagination extends Spine.Controller
 
   constructor: (path: @path, total: @total, current: @current, per_page: @per_page, scope: @scope) ->
-    @scope ? 5
-    @per_page ? 30
-    @path ? "#/"
+    super
+    @scope ?= 2
+    @per_page ?= 30
+    @path ?= "#/"
     @links = []
     @current = 1 if @current < 1
 
-    @last = Math.ceil @total / @per_page
+    @max = Math.ceil @total / @per_page
+    return @render() unless @max > 1
 
-    @prev = if @current - 1 > 0 then "#{@path}/page/#{@current - 1}" else false
-    @next = if @current + 1 <= @last then "#{@path}/page/#{@current + 1}" else false
+    @prev = if @current > 1 then "#{@path}/page/#{@current - 1}" else false
+    @next = if @current < @max then "#{@path}/page/#{@current + 1}" else false
 
-    return @render() if @last < 1
-
-    if @last <= @scope
-      for i in @scope
-        page_num = i + 1
+    if @max <= @scope
+      for page_num in [1..@scope]
         @links.push @link(page_num)
-    else
-      append_last = false
-      append_more = false
-      left = @current - ( Math.floor @scope / 2)
-      left = 1 if left < 1
-      right = left + @scope - 1
-      if left > 1
-        @links.push @link(1)
-      if left > 2
-        @links.push @link('...')
-      if right < @last
-        append_last = true
-      if right < @last - 1
-        append_more = true
-      for i in [left...right]
-        page_num = i
-        @links.push @link(page_num)
-      if append_more
-        @links.push @link('...')
-      if append_last
-        @links.push @link(@last)
+        break if page_num is @max
+      return @render()
 
+    append_last = false
+    append_more = false
+    left = @current - ( Math.floor @scope / 2)
+    left = 1 if left < 1
+    right = left + @scope - 1
+    @links.push @link(1) if left > 1
+    @links.push @link('...') if left > 2
+    append_last = true if right < @max
+    append_more = true if right < @max - 1
+    @links.push @link(page_num) for page_num in [left..right]
+    @links.push @link('...') if append_more
+    @links.push @link(@max) if append_last
     @render()
 
   link: (page_num) =>
@@ -49,12 +41,12 @@ class Pagination extends Spine.Controller
     return link
 
   render: =>
-    @html @template("pagination")
+    @replace @template("pagination")
+      max: @max
       prev: @prev
       next: @next
       links: @links
       current: @current
-      
     @
 
 @app.exports["module pagination"] = Pagination

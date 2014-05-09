@@ -1,0 +1,44 @@
+.row
+  .col-lg-12
+    form.form-horizontal
+      - each property, name in schema.properties
+        - default_value = property.default_value
+        - if (!default_value) default_value = ""
+
+        .form-group
+          label.field-name.col-lg-4 #{name.replace(/_/g, ' ')}
+          .col-lg-8
+            - if (property.type == 'integer' || property.type == 'float')
+              input.form-control(
+                type="text"
+                name="#{name}" 
+                class="#{default_value == '[Function]' ? 'disabled' : ''}"
+                disabled=default_value=='[Function]'
+                placeholder="#{default_value == '[Function]' ? 'Auto' : default_value}")
+            - else if (property.type == 'boolean')
+              - value = default_value ? true : false
+              label.radio-inline
+                input(type="radio" name="#{name}" value="1" checked=value)
+                | YES
+              label.radio-inline
+                input(type="radio" name="#{name}" value="0" checked=!value)
+                | NO
+            - else if (property.type == 'timestamp')
+              .input-group(class="#{default_value == '[Function]' ? '' : 'date'}")
+                input.form-control(
+                  type="text"
+                  name="#{name}" 
+                  class="date #{default_value == '[Function]' ? 'disabled' : ''}"
+                  disabled=default_value=='[Function]'
+                  placeholder="#{default_value == '[Function]' ? 'Auto' : default_value}")
+                span.input-group-addon
+                  i.fa.fa-th
+
+                
+            - else
+              input.form-control(
+                type="text"
+                name="#{name}" 
+                class="#{default_value == '[Function]' ? 'disabled' : ''}"
+                disabled=default_value=='[Function]'
+                placeholder="#{default_value == '[Function]' ? 'Auto' : default_value}")

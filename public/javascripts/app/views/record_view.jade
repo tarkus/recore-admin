@@ -1,0 +1,31 @@
+.row
+  .col-lg-12
+    table.table
+      tbody
+      - each property, name in schema.properties
+        - value = record.properties[name]
+        tr
+          td.field-name #{name.replace(/_/g, ' ')}
+          - if (property.type == 'boolean')
+            td.field-value
+              .label.label-default(class="#{value ? 'label-success' : ''}") YES
+              .space
+              .label.label-default(class="#{value ? '' : 'label-danger'}") NO
+          - else if (property.type == 'timestamp')
+            - if (!value)
+              td.field-value 
+                pre
+                  i EMPTY
+            - else
+              - if (value.toString().length == 10) value = value * 1000
+              td.field-value
+                pre #{new Date(value).toISOString()}
+          - else
+            td.field-value 
+              pre 
+                - if (value)
+                  | #{value}
+                - else
+                  i EMPTY
+
+

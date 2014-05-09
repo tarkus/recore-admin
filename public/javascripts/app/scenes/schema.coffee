@@ -1,36 +1,30 @@
 SchemaModel = @app.require 'model schema'
+SchemaController = @app.require 'module schema'
 
 class Schema extends Spine.Controller
 
   elements:
-    ".modal": "modal"
-
-  events:
-    "click .function": "detail"
+    ".schema-view": "schema_view"
+    ".page-header": "title"
 
   constructor: ->
     super
-    SchemaModel.bind 'refresh', @create
-
-  active: (@name) ->
-    SchemaModel.fetch url: "#{base_uri}/schema/#{@name}"
-    super
-
-  create: (schemas) =>
-    @schema = schemas.pop()
+    SchemaModel.bind 'refresh', @createSchemas
     @render()
 
-  detail: (e) =>
-    target = $(e.target)
-    @modal.find(".modal-title").html target.data('title')
-    @modal.find(".content").html target.data('content')
-    @modal.modal 'show'
+  configure: (@model) ->
+    @stack.swap.scene = 'schema'
+    @title.html @model
+    SchemaModel.fetch url: "#{base_uri}/schema/#{@model}"
+    @active()
 
+  createSchemas: (schemas) =>
+    return unless @stack.swap.scene is 'schema'
+    view = new SchemaController schema: schemas.pop()
+    @schema_view.html view.el
 
   render: =>
-    @replace @template("schema")
-      schema: @schema
+    @replace @template("schema_scene")()
     @
 
-
-@app.exports['module schema'] = Schema
+@app.exports['scene schema'] = Schema

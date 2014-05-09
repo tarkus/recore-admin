@@ -8,6 +8,8 @@
           a.record(href="#/record/#{name}")
             span.fa.fa-table
             | #{name}
+            .label.label-default(class="count-#{name}")
+              | #{count[name]}
           a.schema(href="#/schema/#{name}")
             span.fa.fa-chevron-right
 

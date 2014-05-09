@@ -1,4 +1,6 @@
-tr(class="#{odd > 0 ? 'odd' : 'even'}")
-  - each property, name in row.properties 
-    td.property-value
-      code #{name}
+tr.record-row(id="record-id-#{record.id}")
+  - each property, name in schema.properties 
+    - value = record.properties[name]
+    td(class="type-#{property.type == '[Function]' ? 'function' : property.type}")
+      span.record-value(data-title="#{name}" data-content="#{value}")
+        | #{record.properties[name]}

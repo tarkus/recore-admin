@@ -1,8 +1,7 @@
 class Record extends Spine.Model
-  @configure "Record", "properties", "total"
+  @configure "Record", "model", "properties", "total", "range"
   @extend Spine.Model.Ajax
 
   @url: "/record"
 
 @app.exports["model record"] = Record
-

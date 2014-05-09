@@ -6,6 +6,7 @@
 #= require '../components/allmixedup/spine/relation.js'
 #= require '../components/active_spine/active_spine.js'
 #= require '../components/allmixedup/common-app.js'
+#= require '../components/bootstrap-datepicker/js/bootstrap-datepicker.js'
 
 #= require '../components/allmixedup/bootstrap/js/bootstrap.min.js'
 

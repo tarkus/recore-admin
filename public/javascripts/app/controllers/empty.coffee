@@ -1,10 +1,11 @@
 class Empty extends Spine.Controller
 
-  constructor: ->
-    @render
+  constructor: (@text="No Data") ->
+    super
+    @render()
 
   render: =>
-    @html @template("empty")()
+    @replace @template("empty") text: @text
     @
 
 @app.exports["module empty"] = Empty

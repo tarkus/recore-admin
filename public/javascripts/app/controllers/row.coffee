@@ -1,11 +1,11 @@
 class Row extends Spine.Controller
 
-  constructor: (record: @record) ->
+  constructor: (record: @record, schema: @schema) ->
     super
     @render()
 
   render: =>
-    @html @template('row') record: @record
+    @replace @template('row') record: @record, schema: @schema
     @
 
 @app.exports['module row'] = Row

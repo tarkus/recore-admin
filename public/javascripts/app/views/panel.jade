@@ -1,0 +1,26 @@
+.panel.panel-default
+  .panel-heading #{title}
+  .panel-body
+    - if (typeof(content) != 'object')
+      pre
+        | #{content}
+    - else if (Array.isArray(content))
+      table.table.table-striped.table-bordered
+        tbody
+          - each item, idx in content
+            - if (typeof(item) == 'string')
+              tr 
+                td #{item}
+            - else
+              tr
+                - each value, key in item
+                  td #{value}
+    - else
+      - each value, key in content
+        .row
+          label.field-name.col-lg-5 #{key}:
+          .field-value.col-lg-7 #{value}
+
+
+
+

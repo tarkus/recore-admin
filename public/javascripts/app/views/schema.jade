@@ -1,75 +1,68 @@
-.schema.container
+.row
+  .col-lg-12
+    p.id-generator
+      span ID Generator:
+      code #{schema.id_generator}
+      - if (schema.id_generator == '[Function]')
+        span.fa.fa-caret-right.function(
+          data-title="ID Generator" 
+          data-content="#{property._id_generator}")
 
-  .row
-    .col-lg-12
-      h2.page-header
-        | #{schema.name}
+                      
 
-  .row
-    .col-lg-12
-      p.id-generator
-        span ID Generator:
-        code #{schema.id_generator}
-        - if (schema.id_generator == '[Function]')
-          span.fa.fa-caret-right.function(
-            data-title="ID Generator" 
-            data-content="#{property._id_generator}")
-
-                        
-
-  .row
-    .col-lg-12
-      .panel.panel-default
-        .panel-heading
-          | Properties 
-        .panel-body
-          .table-responsive
-            table.table.table-striped.table-bordered.table-hover.properties
-              thead
-                tr
-                  th Name
-                  th Type
-                  th Index
-                  th Default Value
-              tbody 
-                - odd = -1
-                - each property, name in schema.properties 
-                  - odd = -odd
-                  tr(class="#{odd > 0 ? 'odd' : 'even'}")
-                    td.name 
-                      code #{name}
-                    td.type 
-                      code #{property.type}
-                      - if (property.type == '[Function]')
+.row
+  .col-lg-12
+    .panel.panel-default
+      .panel-heading
+        | Properties 
+      .panel-body
+        .table-responsive
+          table.table.table-striped.table-bordered.table-hover.properties
+            thead
+              tr
+                th Name
+                th Type
+                th Index
+                th Default Value
+            tbody 
+              - odd = -1
+              - each property, name in schema.properties 
+                - odd = -odd
+                tr(class="#{odd > 0 ? 'odd' : 'even'}")
+                  td.name 
+                    code #{name}
+                  td.type 
+                    code #{property.type}
+                    - if (property.type == '[Function]')
+                      span.fa.fa-caret-right.function(
+                        data-title="Type of '#{name}'"
+                        data-content="#{property._type}")
+                  td.index
+                    - if (property.index || property.unique)
+                      span.fa(class="#{property.unique ? 'fa-bolt' : 'fa-check'}")
+                    - else
+                      span.fa.fa-times
+                  td.default_value
+                    - if (property.default_value)
+                      code #{property.default_value}
+                      - if (property.default_value == '[Function]')
                         span.fa.fa-caret-right.function(
-                          data-title="Type of '#{name}'"
-                          data-content="#{property._type}")
-                    td.index
-                      - if (property.index || property.unique)
-                        span.fa(class="#{property.unique ? 'fa-bolt' : 'fa-check'}")
-                      - else
-                        span.fa.fa-times
-                    td.default_value
-                      - if (property.default_value)
-                        code #{property.default_value}
-                        - if (property.default_value == '[Function]')
-                          span.fa.fa-caret-right.function(
-                            data-title="Default Value of '#{name}'" 
-                            data-content="#{property._default_value}")
-                      - else
-                        span.grey Undefined
-                  
+                          data-title="Default Value of '#{name}'" 
+                          data-content="#{property._default_value}")
+                    - else
+                      span.grey Undefined
+                
 
-  .modal.fade
-    .modal-dialog
-      .modal-content
-        .modal-header
-          button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
-          h4.modal-title
-        .modal-body
-          .well.content
-        .modal-footer
-            
+.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+        h4.modal-title
+      .modal-body
+        .well.content
+      .modal-footer
+          
 
 
 
