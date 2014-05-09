@@ -2,11 +2,12 @@ class Pagination extends Spine.Controller
 
   constructor: (path: @path, total: @total, current: @current, per_page: @per_page, scope: @scope) ->
     super
-    @scope ?= 2
+    @scope ?= 5
     @per_page ?= 30
     @path ?= "#/"
     @links = []
     @current = 1 if @current < 1
+    @current = parseInt @current
 
     @max = Math.ceil @total / @per_page
     return @render() unless @max > 1

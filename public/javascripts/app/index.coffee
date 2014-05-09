@@ -13,6 +13,8 @@ class Stage extends Spine.Stack
     dashboard: Dashboard
     record: Record
     schema: Schema
+  
+  default: 'dashboard'
 
   constructor: ->
     @el = $("<div id='page-wrapper'/>").addClass(@className).appendTo($("#wrapper")) unless @el?
@@ -48,9 +50,6 @@ class RecoreAdmin extends Spine.Controller
         @stage.record.configure(params.name, params.page)
 
       "/": =>
-        @stage.dashboard.active()
-
-      "/(.*)": =>
         @stage.dashboard.active()
 
 $ ->

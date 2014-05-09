@@ -141,7 +141,7 @@ body.modal-open
               background-color: #FEF1E0
 
         td
-          max-width: 150px
+          max-width: 250px
           overflow-x: hidden
           text-overflow: ellipsis
 
@@ -161,23 +161,31 @@ body.modal-open
         width: 100%
         overflow-x: scroll
 
+        table
+          border-left: 0
+
+        td
+          white-space: pre
+
         tr.selected
           td
-            background-color: #0648cc
-            color: #fafafa
+            background-color: #d7e8ff
+            color: #333
 
       .table-ids
         display: inline-block
-        width: 35px
+        min-width: 35px
         max-width: 150px
-        td
-          text-align: center
-          font-weight: bold
-          cursor: pointer
 
-          &.selected
-            background-color: #0648cc !important
-            color: #e6e6e6
+        tr
+          td
+            text-align: center
+            font-weight: bold
+            cursor: pointer
+
+            &.selected
+              background-color: #6e6e6e !important
+              color: #e6e6e6
 
 
 
@@ -222,17 +230,18 @@ form
     input[type="radio"]
       margin-left: -18px
 
-.panel
-  .panel-heading
-    font-weight: bold
-  .field-name
-    text-transform: capitalize
-    text-align: right
-  table
-    tr td:last-child
-      max-width: 400px
-      word-wrap: break-word
-      font-family: monospace
+.dashboard.container
+  .panel
+    .panel-heading
+      font-weight: bold
+    .field-name
+      text-transform: capitalize
+      text-align: right
+    table
+      tr td:last-child
+        max-width: 400px
+        word-wrap: break-word
+        font-family: monospace
       
 .datepicker
   z-index: 10000 !important

@@ -264,5 +264,6 @@ exports.connect = (options) ->
 
       app.use "/templates", webapp_view.connect
         apps: 'app', webroot: "#{__dirname}/public/javascripts"
+        context: app.locals
 
     return app
