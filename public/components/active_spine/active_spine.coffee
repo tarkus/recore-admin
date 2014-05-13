@@ -76,13 +76,27 @@ else if theme is 'fade'
 
   Spine.Manager.include
     change: (current, args...) ->
+      changed = false
 
-      for cont in @controllers when cont isnt current
-        cont.el.fadeOut 'fast' if cont.el.hasClass('active')
-        cont.deactivate(args...)
 
-      current.el.css({ opacity: 0, display: 'block' }).animate { opacity: 1 }, Math.random() * 100 + 400, =>
-        current.activate(args)
+      onstage = ->
+        return if changed
+        changed = true
+        current.el.css
+          opacity: 0
+          display: 'block'
+        .animate opacity: 1, Math.random() * 200 + 100, =>
+          current.activate(args)
+
+      for cont, idx in @controllers when cont isnt current
+        continue unless cont.el.hasClass('active')
+        previous = cont
+        previous.el.fadeOut 10, ->
+          previous.deactivate(args...)
+          onstage()
+
+      onstage() unless previous?
+
 
 Spine.Stack::swap = {} if Spine.Stack
 
@@ -96,3 +110,28 @@ Spine.Controller.include
   setStack: (stack) -> Spine.Controller::stack = stack
 
   template: (name) -> window.templates[name] ? (() -> "")
+
+Spine.Models = []
+
+Spine.ModelParty = extended: -> Spine.Models.push @
+
+Spine.Model.include
+
+  report_error: (all) ->
+    error_fields = {}
+    for field, errors of all
+      continue unless errors.length > 0
+      error_fields[field] = []
+      for error in errors
+        if error is 'notEmpty'
+          message = "required"
+        if error is 'notUnique'
+          message = "not unique"
+        if error is 'email'
+          message = "require an valid email address"
+        if error is 'length'
+          continue if errors.indexOf('notEmpty') != -1
+          message = "either too short or too long"
+        message = "#{field} #{error}" unless message?
+        error_fields[field].push message
+    error_fields

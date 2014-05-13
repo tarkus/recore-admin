@@ -1,12 +1,14 @@
-SchemaModel = @app.require 'model schema'
-RecordModel = @app.require 'model record'
+SchemaModel  = @app.require 'model schema'
+RecordModel  = @app.require 'model record'
 
-Row         = @app.require 'module row'
-Empty       = @app.require 'module empty'
-Pagination  = @app.require 'module pagination'
-RecordAdd   = @app.require 'module record add'
-RecordView  = @app.require 'module record view'
-RecordEdit  = @app.require 'module record edit'
+Row          = @app.require 'module row'
+Empty        = @app.require 'module empty'
+Pagination   = @app.require 'module pagination'
+
+RecordAdd    = @app.require 'module record add'
+RecordView   = @app.require 'module record view'
+RecordEdit   = @app.require 'module record edit'
+RecordDelete = @app.require 'module record delete'
 
 class Record extends Spine.Controller
 
@@ -15,7 +17,7 @@ class Record extends Spine.Controller
     ".modal.detail": "detail_modal"
     ".modal.action": "action_modal"
     ".panel-heading": "desc"
-    ".table-responsive": "table_container"
+    ".tables": "table_container"
     ".table-records": "table_records"
     ".table-records thead": "records_header"
     ".table-records tbody": "records"
@@ -65,6 +67,7 @@ class Record extends Spine.Controller
     @records.html ''
     @ids.html ''
     @pagination.html ''
+    
     @table_ids.css 'display', 'none'
     @btn_add.css 'display', 'none'
     @btn_view.css 'display', 'none'
@@ -86,10 +89,11 @@ class Record extends Spine.Controller
     if records.length is 0
       empty = new Empty
       @records.html empty.el
+      @[@action](@schema.name) if @action
       return
 
     first = records[0]
-    @paginate first
+    @paginate first unless first.total
 
     @table_ids.css 'display', 'inline-block'
 
@@ -99,19 +103,21 @@ class Record extends Spine.Controller
     @records_header.html header
     @ids_header.html "<tr><th>&nbsp;</th></tr>"
 
-    @desc.html "Showing #{first.range[0]}-#{first.range[1]} of #{first.total}"
+    @desc.html "Showing #{first.range[0]}-#{first.range[1]} of #{first.total}" if first.range?
       
-    full_width = @table_container.width()
     for record in records
       @ids.append "<tr><td class='record-id' id='id-#{record.id}'>#{record.id}</td></tr>"
       row = new Row record: record, schema: @schema
       @records.append row.el
 
+    full_width = @table_container.width()
     @table_records.width full_width - @table_ids.width() - 2
 
     @btn_view.addClass('disabled').css 'display', 'inline-block'
     @btn_edit.addClass('disabled').css 'display', 'inline-block'
     @btn_delete.addClass('disabled').css 'display', 'inline-block'
+
+    @[@action](@schema.name) if @action
 
   paginate: (record) =>
     pagination = new Pagination
@@ -121,63 +127,69 @@ class Record extends Spine.Controller
       path: "#/record/#{@model}"
     @pagination.html pagination.el
 
-  showViewModal: =>
-    @record = RecordModel.find @selected_id
-    view = new RecordView record: @record, schema: @schema
-    @action_modal.find(".modal-title").html "Viewing #{@schema.name.toLowerCase()} ##{@selected_id}"
-    @action_modal.find(".modal-body").html view.el
-    @action_modal.find('.btn-default').css('display', 'inline-block').html "Close"
-    @action_modal.find('.btn-primary').css "display", 'none'
-    @action_modal.modal 'show'
-
   showAddModal: =>
-    @record = new RecordModel
-    view = new RecordAdd record: @record, schema: @schema
-    @action_modal.find(".modal-title").html "Adding new #{@schema.name.toLowerCase()} object"
-    @action_modal.find('.btn-default').css('display', 'inline-block').html "Cancel"
-    @action_modal.find('.btn-primary').css('display', 'inline-block').html "Save"
-    @action_modal.find(".modal-body").html view.el
-    @action_modal.modal 'show'
-    @action_modal.data 'action', 'create'
+    @navigate "/record/#{@schema.name}/add"
+
+  showViewModal: =>
+    @navigate "/record/#{@schema.name}/view/#{@selected_id}"
 
   showEditModal: =>
-    @record = RecordModel.find @selected_id
-    view = new RecordEdit record: @record, schema: @schema
-    @action_modal.find(".modal-title").html "Editing #{@schema.name.toLowerCase()} ##{@selected_id}"
-    @action_modal.find('.btn-default').css('display', 'inline-block').html "Cancel"
-    @action_modal.find('.btn-primary').css('display', 'inline-block').html "Save"
-    @action_modal.find(".modal-body").html view.el
-    @action_modal.modal 'show'
-    @action_modal.data 'action', 'update'
+    @navigate "/record/#{@schema.name}/edit/#{@selected_id}"
 
   showDeleteModal: =>
-    @action_modal.find(".modal-title").html "Deleting #{@schema.name.toLowerCase()} ##{@selected_id}"
-    @action_modal.find('.btn-default').css('display', 'inline-block').html "Cancel"
-    @action_modal.find('.btn-primary').css('display', 'inline-block').html "Confirm"
-    @action_modal.find('.modal-body').html """
-      Please confirm deleting a #{@schema.name.toLowerCase()} object with id = <code>#{@selected_id}</code>
-    """
-    @action_modal.find('.btn-primary').on 'click', =>
-      @record.destroy()
-    @action_modal.modal 'show'
-    @action_modal.data 'action', 'delete'
+    @navigate "/record/#{@schema.name}/delete/#{@selected_id}"
+
+  add: (model) =>
+    @action = null
+    if @schema and @schema.name is model
+      @record = new RecordModel
+      @action_handler = new RecordAdd record: @record, schema: @schema, modal: @action_modal
+    else
+      @action = 'add'
+      @configure model
+
+  view: (model, id) =>
+    @action = null
+    @selected_id ?= id
+    if @schema and @schema.name is model
+      @record = RecordModel.find @selected_id
+      @action_handler = new RecordView record: @record, schema: @schema, modal: @action_modal
+    else
+      @action = 'view'
+      page = Math.floor(@selected_id / @per_page) + 1
+      @configure model, page
+
+  edit: (model, id) =>
+    @action = null
+    @selected_id ?= id
+    if @schema and @schema.name is model
+      @record = RecordModel.find @selected_id
+      @action_handler = new RecordEdit record: @record, schema: @schema, modal: @action_modal
+    else
+      @action = 'edit'
+      page = Math.floor(@selected_id / @per_page) + 1
+      @configure model
+
+  delete: (model, id) =>
+    @action = null
+    @selected_id ?= id
+    if @schema and @schema.name is model
+      @record = RecordModel.find @selected_id
+      @action_handler = new RecordDelete record: @record, schema: @schema, modal: @action_modal
+    else
+      @action = 'delete'
+      page = Math.floor(@selected_id / @per_page) + 1
+      @configure model
 
   submit: =>
-    if @action_modal.data('action') is 'delete'
-      return
-    else
-      fields = @action_modal.find('form').serializeArray()
-      properties = {}
-      for field in fields
-        properties[field.name] = field.value
+    @action_modal.find(".form-group.has-error").removeClass 'has-error'
+    @action_modal.find(".alert-danger").css('display', 'none').html ""
 
-      @record.updateAttributes
-        model: @schema.name
-        properties: properties
-
-      @record.update url: "#{base_uri}/record"
-
+    @action_handler?.submit?()
+    
   detail: (e) =>
+    e.preventDefault()
+    e.stopPropagation()
     target = $(e.target)
     @detail_modal.find(".modal-title").html target.data('title')
     @detail_modal.find(".content").html target.data('content')
@@ -215,7 +227,6 @@ class Record extends Spine.Controller
   render: =>
     @replace @template("record_scene")
       model: @model
-    @action
     @
 
 @app.exports['scene record'] = Record

@@ -3,9 +3,15 @@ class RecordView extends Spine.Controller
   events:
     "click .field-value": "select"
 
-  constructor: (record: @record, schema: @schema) ->
+  constructor: (record: @record, schema: @schema, modal: @modal) ->
     super
     @render()
+
+    @modal.find(".modal-title").html "Viewing #{@schema.name.toLowerCase()} ##{@record.id}"
+    @modal.find(".modal-body").html @el
+    @modal.find('.btn-default').css('display', 'inline-block').html "Close"
+    @modal.find('.btn-primary').css "display", 'none'
+    @modal.modal 'show'
 
   select: (e) =>
     selectText(e.target)

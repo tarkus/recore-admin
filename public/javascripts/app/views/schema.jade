@@ -1,14 +1,63 @@
 .row
   .col-lg-12
-    p.id-generator
-      span ID Generator:
-      code #{schema.id_generator}
-      - if (schema.id_generator == '[Function]')
-        span.fa.fa-caret-right.function(
-          data-title="ID Generator" 
-          data-content="#{property._id_generator}")
+    .col-lg-3
+      p.id-generator
+        span ID Generator:
+        code #{schema.id_generator}
+        - if (schema.id_generator == '[Function]')
+          span.fa.fa-caret-right.function(
+            data-title="ID Generator" 
+            data-content="#{property._id_generator}")
 
-                      
+.row
+  .actions.col-lg-12
+
+    .action.rebuild-index.col-lg-4
+      .panel.panel-default
+        .panel-heading
+          span.fa.fa-bolt
+          | Rebuild Index
+        .panel-body
+          .input-group
+            button.btn.btn-default.form-control.dropdown-toggle(type="button" data-toggle="dropdown")
+              | Select property
+              span.caret
+            ul.dropdown-menu
+              - each property, name in schema.properties
+                - if (property.index || property.unique)
+                  li
+                    a(href="javascript:void(0);") #{name}
+            .input-group-btn
+              button.btn.btn-default(type="button") Go
+
+          .progress
+            .progress-bar.progress-bar-success(style="width: 10%")
+              span.sr-only
+
+
+    .action.remove-index.col-lg-4
+      .panel.panel-default
+        .panel-heading
+          span.fa.fa-truck
+          | Remove Legacy Index
+        .panel-body
+          .input-group
+            input.form-control(type="text" placeholder="Property")
+            .input-group-btn
+              button.btn.btn-default(type="button") Go
+
+
+    .action.remove-property.col-lg-4
+      .panel.panel-default
+        .panel-heading
+          span.fa.fa-trash-o
+          | Remove Legacy Property
+        .panel-body
+          .input-group
+            input.form-control(type="text" placeholder="Property")
+            .input-group-btn
+              button.btn.btn-default(type="button") Go
+
 
 .row
   .col-lg-12

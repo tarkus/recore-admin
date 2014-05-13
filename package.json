@@ -1,8 +1,8 @@
 {
   "name": "recore-admin",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Admin interface for Recore models",
-  "main": "index.js",
+  "main": "./node_modules/.bin/coffee index.coffee",
   "scripts": {
     "test": "make test"
   },
@@ -22,11 +22,13 @@
   "homepage": "https://github.com/tarkus/recore-admin",
   "dependencies": {
     "body-parser": "^1.0.2",
+    "coffee-script": "^1.7.1",
     "compression": "^1.0.2",
     "connect-assets": "^2.5.3",
     "cookie-parser": "^1.0.1",
     "errorhandler": "^1.0.1",
     "express": "^4.1.1",
+    "express-session": "^1.0.4",
     "express-static-view": "^0.4.1",
     "express-webapp-view": "^0.4.5",
     "jade": "^1.3.1",

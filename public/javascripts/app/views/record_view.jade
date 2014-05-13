@@ -12,14 +12,11 @@
               .space
               .label.label-default(class="#{value ? '' : 'label-danger'}") NO
           - else if (property.type == 'timestamp')
-            - if (!value)
-              td.field-value 
-                pre
-                  i EMPTY
-            - else
-              - if (value.toString().length == 10) value = value * 1000
-              td.field-value
-                pre #{new Date(value).toISOString()}
+            - if (value && value.toString().length == 10) value = value * 1000
+            - time = value ? moment(value).format("YYYY-MM-DD HH:mm:ss ZZ") : '<i>EMPTY</i>'
+            td.field-value 
+              pre
+                | #{time}
           - else
             td.field-value 
               pre 

@@ -12,6 +12,8 @@ class Dashboard extends Spine.Controller
     Widget.bind 'refresh', @refresh
 
   active: =>
+    return if @stack.swap.scene is 'dashboard'
+    @stack.swap.scene = 'dashboard'
     Widget.deleteAll()
     Widget.fetch url: "#{base_uri}/stats"
     @widgets.html ''

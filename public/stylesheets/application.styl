@@ -8,7 +8,6 @@ body.modal-open
 
 .stage > div
   width: 100%
-  float: left
 
 .stage > *:not(.active)
   display: none
@@ -23,6 +22,13 @@ body.modal-open
   width: 5px
   display: inline-block
 
+.page-header
+  margin-top: 23px
+
+#page-wrapper.stage
+  overflow: auto
+  min-height: 600px
+
 .navbar-brand
   sup
     padding-left: 3px
@@ -36,9 +42,17 @@ body.modal-open
   height: 20px
 
 .sidebar-collapse
+  ul.nav
+    margin-bottom: 5px
+
+  .utilities
+    a
+      span
+        margin-right: 5px
+    
   h5
-    padding: 6px 10px
-    margin-bottom: 0px
+    padding: 4px 10px 6px
+    margin-bottom: 4px
     color: #aaa
 
   li
@@ -77,6 +91,19 @@ body.modal-open
       color: #666
       &.function
         cursor: pointer
+
+  .actions
+    .action
+      span.fa
+        margin-right: 3px
+      .progress
+        height: 5px
+        margin-bottom: 5px
+        margin-top: 2px
+        border-radius: 0
+
+    .caret
+      margin-left: 3px
 
   .properties
   
@@ -221,6 +248,8 @@ form
     vertical-align: baseline
     line-height: 35px
     color: #666
+    &.control-label
+      padding-top: 0
 
   .radio-inline
     padding-left: 29px
@@ -245,4 +274,28 @@ form
       
 .datepicker
   z-index: 10000 !important
+
+.modal.action
+  .alert
+    &.alert-danger
+      color: #fff
+      background-color: #ff4136
+      border-color: #ff1103
+      border-width: 0 1px 4px 1px
+      strong
+        text-transform: capitalize
+
+.caution
+  font-weight: bold
+  text-align: center
+  font-size: 18px
+  color: #333
+  text-transform: uppercase
+
+.flash
+  position: absolute
+  top: 40px
+  width: 26%
+  left: 37%
+  z-index: 1000
 

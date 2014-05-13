@@ -4,6 +4,8 @@ class Row extends Spine.Controller
     super
     @render()
 
+    @record.bind 'save', @render
+
   render: =>
     @replace @template('row') record: @record, schema: @schema
     @
