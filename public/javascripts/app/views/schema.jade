@@ -8,56 +8,9 @@
           span.fa.fa-caret-right.function(
             data-title="ID Generator" 
             data-content="#{property._id_generator}")
-
-.row
-  .actions.col-lg-12
-
-    .action.rebuild-index.col-lg-4
-      .panel.panel-default
-        .panel-heading
-          span.fa.fa-bolt
-          | Rebuild Index
-        .panel-body
-          .input-group
-            button.btn.btn-default.form-control.dropdown-toggle(type="button" data-toggle="dropdown")
-              | Select property
-              span.caret
-            ul.dropdown-menu
-              - each property, name in schema.properties
-                - if (property.index || property.unique)
-                  li
-                    a(href="javascript:void(0);") #{name}
-            .input-group-btn
-              button.btn.btn-default(type="button") Go
-
-          .progress
-            .progress-bar.progress-bar-success(style="width: 10%")
-              span.sr-only
-
-
-    .action.remove-index.col-lg-4
-      .panel.panel-default
-        .panel-heading
-          span.fa.fa-truck
-          | Remove Legacy Index
-        .panel-body
-          .input-group
-            input.form-control(type="text" placeholder="Property")
-            .input-group-btn
-              button.btn.btn-default(type="button") Go
-
-
-    .action.remove-property.col-lg-4
-      .panel.panel-default
-        .panel-heading
-          span.fa.fa-trash-o
-          | Remove Legacy Property
-        .panel-body
-          .input-group
-            input.form-control(type="text" placeholder="Property")
-            .input-group-btn
-              button.btn.btn-default(type="button") Go
-
+      p.object-count
+        span Objects:
+        code #{schema.count}
 
 .row
   .col-lg-12
@@ -101,6 +54,98 @@
                     - else
                       span.grey Undefined
                 
+.row
+  .task-progress.col-lg-12
+
+      .panel.panel-default
+        .panel-heading
+          span.fa.fa-tasks
+          | Running Task
+        .panel-body
+          .progress-report(style="display: #{schema.task.id ? 'block' : 'none'}")
+            .row
+              .report.col-lg-10
+                span.title #{schema.task.id ? schema.task.title : ''}
+                .pull-right
+                  .label.label-default
+                    | Status:&nbsp;
+                    span.status #{schema.task.id ? schema.task.status : 'stopped'}
+                  .label.label-default
+                    | Objects:&nbsp;
+                    span.objects #{schema.task.id ? schema.task.current + "/" + schema.task.objects : '0/0'}
+                  .label.label-default
+                    | Errors:&nbsp;
+                    span.errors #{schema.task.id ? schema.task.errors : 0}
+                  .label.label-default
+                    | Elapsed:&nbsp;
+                    span.time-elapsed #{schema.task.id ? duration(schema.task.elapsed) : duration()}
+                  .label.label-default
+                    | Time Left:&nbsp;
+                    span.time-left Time Left: #{schema.task.id ? duration(schema.task.estimated - schema.task.elapsed) : duration()}
+            .row
+              .col-lg-10
+                button.btn.btn-default.btn-dump(type="button" style="float: left")
+                  span.fa.fa-search-plus
+                .progress
+                  .progress-bar(
+                    style="width: #{schema.task.id ? schema.task.progress : 0 }%")
+                    span #{schema.task.id ? schema.task.progress : 0 }%
+              .col-lg-2
+                .task-control
+                  .btn-group
+                    button.btn.btn-default.btn-play(type="button" style="display: none")
+                      span.fa.fa-play
+                    button.btn.btn-default.btn-pause(type="button")
+                      span.fa.fa-pause
+                    button.btn.btn-default.btn-stop(type="button")
+                      span.fa.fa-stop
+          .empty(style="display: #{schema.task.progress ? 'none' : 'block'}")
+            i(style="color: #999") NONE
+
+.row
+  .actions.col-lg-12
+
+    .action.create-index.col-lg-4
+      .panel.panel-default
+        .panel-heading
+          span.fa.fa-bolt
+          | Build Index
+        .panel-body
+          .input-group
+            button.btn.btn-default.form-control.dropdown-toggle(type="button" data-toggle="dropdown")
+              p.txt Select property
+              span.caret
+            ul.dropdown-menu
+              - each property, name in schema.properties
+                - if (property.index || property.unique)
+                  li
+                    a(href="javascript:void(0);") #{name}
+            .input-group-btn
+              button.btn.btn-default(type="button") Go
+
+    .action.remove-index.col-lg-4
+      .panel.panel-default
+        .panel-heading
+          span.fa.fa-truck
+          | Remove Legacy Index
+        .panel-body
+          .input-group
+            input.form-control(type="text" placeholder="Property")
+            .input-group-btn
+              button.btn.btn-default(type="button") Go
+
+    .action.remove-property.col-lg-4
+      .panel.panel-default
+        .panel-heading
+          span.fa.fa-trash-o
+          | Remove Legacy Property
+        .panel-body
+          .input-group
+            input.form-control(type="text" placeholder="Property")
+            .input-group-btn
+              button.btn.btn-default(type="button") Go
+
+
 
 .modal.fade
   .modal-dialog

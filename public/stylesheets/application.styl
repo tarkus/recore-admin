@@ -2,6 +2,7 @@
 @import '../components/bootstrap-datepicker/css/datepicker.css'
 @import '../components/bootstrap-datepicker/css/datepicker3.css'
 @import 'sb-admin.css'
+@import 'progress_bar.css'
 
 body.modal-open
   margin: 0
@@ -22,8 +23,15 @@ body.modal-open
   width: 5px
   display: inline-block
 
+.nopadding
+  padding: 0 !important
+
 .page-header
   margin-top: 23px
+
+.panel-heading
+  span.fa
+    margin-right: 3px
 
 #page-wrapper.stage
   overflow: auto
@@ -83,7 +91,7 @@ body.modal-open
   code
     background-color: transparent
 
-  .id-generator
+  p
     span
       font-weight: bold
     code
@@ -92,15 +100,57 @@ body.modal-open
       &.function
         cursor: pointer
 
+  .task-progress
+    .panel-body
+      min-height: 50px
+
+    .report
+      margin-bottom: 10px
+      .label
+        margin-right: 5px
+      .title
+        color: #666
+        margin-left: 30px
+        margin-right: 8px
+
+    .progress
+      height: 20px
+      border-radius: 0
+      .progress-bar
+        span
+          line-height: 20px
+          font-weight: bold
+
+    &.paused
+      color: #999
+      .progress-bar
+        background: #ccc
+
+    .task-control
+      vertical-align: middle
+
+    .btn
+      border: 0
+      padding: 4px 8px
+      line-height: 1  
+      color: #666
+      &:hover
+        background-color: transparent
+        color: #333
+
   .actions
     .action
       span.fa
         margin-right: 3px
       .progress
         height: 5px
-        margin-bottom: 5px
-        margin-top: 2px
+        margin-top: -6px
+        margin-bottom: 0
         border-radius: 0
+      .txt
+        overflow: hidden
+        text-overflow: ellipsis
+        width: 230px
 
     .caret
       margin-left: 3px

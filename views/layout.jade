@@ -19,10 +19,16 @@ html
     != css("application")
     != js("application")
 
+    script.
+      var base_uri = "#{base_uri}";
+      var title = "#{title}";
+      var subtitle = "#{subtitle}";
+      var models = !{JSON.stringify(models)};
+      var count = !{JSON.stringify(count)};
+
     script(src="#{base_uri}#{templates.app.all.src}")
-    //- script(src="#{base_uri}/components/allmixedup/socket.io.js")
-    //- script(src="#{base_uri}/socket.io/socket.io.js")
     script(src="#{base_uri}/components/allmixedup/moment.min.js")
+    script(src="#{base_uri}/init_socket.js")
 
     link(rel="stylesheet" href="#{base_uri}/stylesheets/font-awesome.css")
 
@@ -32,23 +38,18 @@ html
   script(src="#{base_uri}/validator.js")
 
   script.
-    var base_uri = "#{base_uri}";
-    var title = "#{title}";
-    var subtitle = "#{subtitle}";
-    var models = !{JSON.stringify(models)};
-    var count = !{JSON.stringify(count)};
 
     function selectText(element) {
-        if (document.selection) {
-            var range = document.body.createTextRange();
-            range.moveToElementText(element);
-            range.select();
-        } else if (window.getSelection) {
-            var range = document.createRange();
-            range.selectNode(element);
-            window.getSelection().addRange(range);
-        }
+      if (document.selection) {
+        var range = document.body.createTextRange();
+        range.moveToElementText(element);
+        range.select();
+      } else if (window.getSelection) {
+        var range = document.createRange();
+        range.selectNode(element);
+        window.getSelection().addRange(range);
+      }
     }
-    
-
+  
     $.fn.datepicker.defaults.format = 'yyyy-mm-dd'
+

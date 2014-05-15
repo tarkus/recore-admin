@@ -9,8 +9,9 @@ class Schema extends Spine.Controller
 
   constructor: ->
     super
-    SchemaModel.bind 'refresh', @createSchemas
     @render()
+
+    SchemaModel.bind 'refresh', @createSchemas
 
   configure: (@model) ->
     @stack.swap.scene = 'schema'
@@ -20,7 +21,8 @@ class Schema extends Spine.Controller
 
   createSchemas: (schemas) =>
     return unless @stack.swap.scene is 'schema'
-    view = new SchemaController schema: schemas.pop()
+    @schema = schemas.pop()
+    view = new SchemaController schema: @schema
     @schema_view.html view.el
 
   render: =>

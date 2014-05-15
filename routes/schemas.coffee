@@ -6,10 +6,12 @@ exports.index = (req, res) ->
   return res.status 404 unless req.params.model
   model = Recore.getModel req.params.model
   return res.status 404 unless model
+  task = {}
   properties = {}
   ins = new model
-  sortables = []
-  _sortables = []
+
+  for id, data of req.app.locals.tasks
+    task = data if data.model is model.modelName
 
   for name, def of ins.properties
     score = 0
@@ -23,17 +25,6 @@ exports.index = (req, res) ->
     if typeof def.type is 'function'
       type = def.type.toString()
       def.type = "[Function]"
-
-    if def.__numericIndex
-      score = 10
-
-      if def.type is 'timestamp'
-        score += 100
-
-        if typeof def.defaultValue is 'function'
-          score += 300
-
-      _sortables[score] = name
 
     properties[name] =
       type: def.type ? "string"
@@ -50,17 +41,16 @@ exports.index = (req, res) ->
   else
     id_generator = ins.idGenerator
 
-  _sortables.map (name) -> sortables.push name
-
   model.count (err, count) ->
     return res.status 500 if err
     return res.send
+      id: req.params.model
       name: req.params.model
       count: count
       id_generator: id_generator
       _id_generator: _id_generator ? ""
-      sortables: sortables
       properties: properties
+      task: task
 
 exports.node = (req, res) ->
   res.send 200

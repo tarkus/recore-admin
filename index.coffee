@@ -11,75 +11,89 @@ webapp_view  = require 'express-webapp-view'
 static_view  = require 'express-static-view'
 assert       = require 'assert'
 
+socket = exports.socket = require './lib/socket'
+
 exports.connect = (options) ->
-    Recore = options.recore
-    assert Recore, "recore instance required"
+  Recore = options.recore
+  assert Recore, "recore instance required"
 
-    app = express()
-    routes = require './routes'
-    mod.setRecore Recore for name, mod of routes
+  app = express()
+  socket.bind app
 
-    app.locals.title = "Recore Backend"
-    app.locals.subtitle = options.title
+  routes = require './routes'
+  mod.setRecore Recore for name, mod of routes
 
-    app.locals.count = {}
-    app.locals.models = []
+  app.locals.tasks = []
+  app.locals.title = "Recore Backend"
+  app.locals.subtitle = options.title
 
-    for name, model of Recore.getModels()
-      do (name, model) ->
-        app.locals.models.push name
-        model.count (err, count) ->
-          return if err
-          app.locals.count[name] = count
+  app.locals.count = {}
+  app.locals.models = []
 
-    app.set 'view engine', 'jade'
-    app.set 'views', "#{__dirname}/views"
+  for name, model of Recore.getModels()
+    do (name, model) ->
+      app.locals.models.push name
+      model.count (err, count) ->
+        return if err
+        app.locals.count[name] = count
 
-    app.use favicon "#{__dirname}/public/images/favicon.png"
-    app.use compress()
-    app.use express.static "#{__dirname}/public"
+  app.set 'view engine', 'jade'
+  app.set 'views', "#{__dirname}/views"
 
-    app.use bodyParser.json()
-    app.use bodyParser.urlencoded()
-    app.use cookieParser()
+  app.use favicon "#{__dirname}/public/images/favicon.png"
+  app.use compress()
+  app.use express.static "#{__dirname}/public"
 
-    app.use session secret: "lj2l34j;2l1jofupojlk12n34"
+  app.use bodyParser.json()
+  app.use bodyParser.urlencoded()
+  app.use cookieParser()
 
-    app.use Recore.connect
-      url: "/validator.js"
-      namespace: 'validator'
+  app.use session secret: "lj2l34j;2l1jofupojlk12n34"
 
-    app.use logger("dev")
+  app.use Recore.connect
+    url: "/validator.js"
+    namespace: 'validator'
 
-    app.get "/record/:model/page/:page", routes.records.retrieve
+  app.use logger("dev")
 
-    app.post "/record/:model", routes.records.update
-    app.put "/record/:model/:id", routes.records.update
+  app.get "/record/:model/page/:page", routes.records.retrieve
 
-    app.del "/record/:model/:id", routes.records.destroy
-    app.post "/record", routes.records.create
+  app.post "/record/:model", routes.records.update
+  app.put "/record/:model/:id", routes.records.update
 
-    app.get "/schema/:model", routes.schemas.index
+  app.del "/record/:model/:id", routes.records.destroy
+  app.post "/record", routes.records.create
 
-    app.get "/stats", routes.stats.index
-    app.get "/stats/:node", routes.stats.node
+  app.get "/schema/:model", routes.schemas.index
 
-    app.post "/key_finder", routes.misc.key_finder
+  app.get "/stats", routes.stats.index
+  app.get "/stats/:node", routes.stats.node
 
-    app.get "/", static_view 'layout'
+  app.post "/key_finder", routes.misc.key_finder
 
-    app.use errorHandler()
+  app.get "/create_index/:model/:property", routes.operations.create_index
+  app.get "/remove_index/:model/:property", routes.operations.remove_index
+  app.get "/remove_property/:model/:property", routes.operations.remove_property
 
-    app.on 'mount', (parent) ->
-      app.locals.base_uri = app.path()
+  app.get "/task/stop/:id", routes.tasks.stop
+  app.get "/task/pause/:id", routes.tasks.pause
+  app.get "/task/resume/:id", routes.tasks.resume
+  app.get "/task/dump/:id", routes.tasks.dump
 
-      app.use assets
-        src: "#{__dirname}/public"
-        helperContext: app.locals
-        servePath: app.path()
+  app.get "/", static_view 'layout'
 
-      app.use "/templates", webapp_view.connect
-        apps: 'app', webroot: "#{__dirname}/public/javascripts"
-        context: app.locals
+  app.use errorHandler()
 
-    return app
+  app.on 'mount', (parent) ->
+    app.locals.base_uri = app.path()
+
+    app.use assets
+      src: "#{__dirname}/public"
+      helperContext: app.locals
+      servePath: app.path()
+
+    app.use "/templates", webapp_view.connect
+      apps: 'app', webroot: "#{__dirname}/public/javascripts"
+      context: app.locals
+
+  return app

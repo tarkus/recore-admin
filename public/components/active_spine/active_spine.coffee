@@ -111,9 +111,10 @@ Spine.Controller.include
 
   template: (name) -> window.templates[name] ? (() -> "")
 
-Spine.Models = []
+Spine.Models = {}
 
-Spine.ModelParty = extended: -> Spine.Models.push @
+Spine.ModelParty = extended: ->
+  Spine.Models[@className] = @
 
 Spine.Model.include
 

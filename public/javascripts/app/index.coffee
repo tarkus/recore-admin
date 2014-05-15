@@ -71,8 +71,17 @@ class RecoreAdmin extends Spine.Controller
 $ ->
   app = new RecoreAdmin el: $("#wrapper")
   Spine.Route.setup()
-  for model in Spine.Models
+  for name, model of Spine.Models
     model.url = "#{base_uri}/#{model.url}"
+
+  window.init_socket = ->
+    @socket.on 'ack', (data) -> console.log data
+    @socket.emit 'new task', 'go home'
+
+    @socket.on 'progress', (data) ->
+      schema = Spine.Models['Schema'].findByAttribute 'name', data.model
+      return unless schema
+      schema.trigger 'progress', data
 
   window.App = app
 
