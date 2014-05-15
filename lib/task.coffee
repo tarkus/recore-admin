@@ -1,31 +1,5 @@
 cuid   = require 'cuid'
 
-###
-tasks = exports.tasks = {}
-
-exports.all = ->
-  tasks
-
-exports.find = (id) ->
-  tasks[id]
-
-exports.new = (model, title) ->
-  id = cuid()
-  tasks[id] =
-    id: id
-    model: model
-    title: title
-    status: 'running'
-    errors: []
-    current: 0
-    objects: 0
-    progress: 0
-    started_at: new Date().getTime()
-    time_elapsed: 0
-    time_estimated: 0
-  tasks[id]
-###
-
 class Task
 
   @tasks: {}
@@ -37,20 +11,22 @@ class Task
 
   @max_error_count: 10
 
-  constructor: (model: model, title: title) ->
+  constructor: (model: @model, title: title) ->
     @id = cuid()
     @properties =
       id: @id
-      model: model
+      model: @model
       title: title
       status: 'running'
       errors: []
       current: 0
       objects: 0
       progress: 0
+      updated_at: new Date().getTime()
       started_at: new Date().getTime()
       time_elapsed: 0
       time_estimated: null
+
 
     Task.tasks[@id] = @
     @
@@ -64,13 +40,16 @@ class Task
     @set properties
 
   touch: =>
-    @properties.time_elapsed = new Date().getTime() - @properties.started_at
+    now = new Date().getTime()
+
+    @properties.time_elapsed = now - @properties.updated_at
+    @properties.updated_at   = now
+
     if @properties.progress is 0
       @properties.time_estimated = null
     else
       @properties.time_estimated = Math.ceil(@properties.time_elapsed / @properties.progress) * 100
 
-    console.log @properties.time_estimated, @properties.time_elapsed
     if @properties.time_estimated < @properties.time_elapsed
       @properties.time_estimated = null
 

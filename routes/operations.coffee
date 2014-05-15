@@ -22,6 +22,8 @@ exports.create_index = (req, res) ->
   ###
 
   # Mock it up
+  progress = 0
+
   emit_progress = ->
     task = Task.find task.id
     return unless task
@@ -51,9 +53,9 @@ exports.remove_index = (req, res) ->
   title = "Removing index on #{req.params.model}.#{req.params.property}"
   task = new Task model: req.params.model, title: title
 
+  # Mock it up
   progress = 0
 
-  # Mock it up
   emit_progress = ->
     task = Task.find task.id
     return unless task
@@ -82,9 +84,9 @@ exports.remove_property = (req, res) ->
   title = "Removing property #{req.params.model}.#{req.params.property}"
   task = new Task model: req.params.model, title: title
 
+  # Mock it up
   progress = 0
 
-  # Mock it up
   emit_progress = ->
     task = Task.find task.id
     return unless task

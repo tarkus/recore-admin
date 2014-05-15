@@ -1,3 +1,4 @@
+Task   = require '../lib/task'
 Recore = null
 
 exports.setRecore = (recore) -> Recore = recore
@@ -10,8 +11,8 @@ exports.index = (req, res) ->
   properties = {}
   ins = new model
 
-  for id, data of req.app.locals.tasks
-    task = data if data.model is model.modelName
+  for id, data of Task.all()
+    task = data.dump() if data.model is model.modelName
 
   for name, def of ins.properties
     score = 0

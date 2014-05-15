@@ -78,10 +78,8 @@ class Schema extends Spine.Controller
     @task_time_elapsed.html @duration data.time_elapsed
     @task_time_left.html @duration data.time_estimated - data.time_elapsed
       
-    #FIXME
-    #    Have to use jQuery here?
-    $('.schema .progress-bar').css "width", "#{data.progress}%"
-    $('.schema .progress span').html "#{text}"
+    @progress_bar.css "width", "#{data.progress}%"
+    @progress_text.html "#{text}"
 
   task_init: =>
     @btn_dump.attr 'disabled', false
@@ -228,7 +226,7 @@ class Schema extends Spine.Controller
     @html @template('schema') schema: @schema, duration: @duration
 
     if @schema.task.id
-      @progress_report(@schema.task.progress)
+      @progress_report(@schema, @schema.task.progress)
       @task_pause() if @schema.task.status is 'paused'
       @disable_actions()
     @
