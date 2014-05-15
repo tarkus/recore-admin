@@ -25,7 +25,7 @@ class Pagination extends Spine.Controller
     append_more = false
     left = @current - ( Math.floor @scope / 2)
     left = 1 if left < 1
-    right = left + @scope - 1
+    right = Math.min left + @scope - 1, @max
     @links.push @link(1) if left > 1
     @links.push @link('...') if left > 2
     append_last = true if right < @max

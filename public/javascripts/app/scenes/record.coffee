@@ -93,7 +93,7 @@ class Record extends Spine.Controller
       return
 
     first = records[0]
-    @paginate first unless first.total
+    @paginate first
 
     @table_ids.css 'display', 'inline-block'
 
@@ -120,12 +120,12 @@ class Record extends Spine.Controller
     @[@action](@schema.name) if @action
 
   paginate: (record) =>
-    pagination = new Pagination
+    pager = new Pagination
       total: record.total
       current: @page
       per_page: @per_page
       path: "#/record/#{@model}"
-    @pagination.html pagination.el
+    @pagination.html pager.el
 
   showAddModal: =>
     @navigate "/record/#{@schema.name}/add"
