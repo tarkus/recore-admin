@@ -29,7 +29,7 @@
     "cuid": "^1.2.4",
     "errorhandler": "^1.0.1",
     "express": "^4.1.1",
-    "express-session": "^1.0.4",
+    "express-session": "^1.1.0",
     "express-static-view": "^0.4.1",
     "express-webapp-view": "^0.4.5",
     "jade": "^1.3.1",
