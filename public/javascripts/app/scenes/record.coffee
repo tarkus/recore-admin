@@ -162,8 +162,9 @@ class Record extends Spine.Controller
   edit: (model, id) =>
     @action = null
     @selected_id ?= id
+    @record = RecordModel.find @selected_id
+    return @navigate "/record/#{model}" unless @record
     if @schema and @schema.name is model
-      @record = RecordModel.find @selected_id
       @action_handler = new RecordEdit record: @record, schema: @schema, modal: @action_modal
     else
       @action = 'edit'
@@ -173,8 +174,9 @@ class Record extends Spine.Controller
   delete: (model, id) =>
     @action = null
     @selected_id ?= id
+    @record = RecordModel.find @selected_id
+    return @navigate "/record/#{model}" unless @record
     if @schema and @schema.name is model
-      @record = RecordModel.find @selected_id
       @action_handler = new RecordDelete record: @record, schema: @schema, modal: @action_modal
     else
       @action = 'delete'

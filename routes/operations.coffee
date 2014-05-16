@@ -15,62 +15,55 @@ exports.create_index = (req, res) ->
   title = "Indexing on #{req.params.model}.#{req.params.property}"
   task = new Task model: req.params.model, title: title
 
-  ###
-  page = 0
-  per_page = 1000
-  Recore.getClient().sort model.getIdsKey(), 'limit', page * per_page, per_page, 'asc', (err, ids) ->
-  ###
+  event = model.create_index req.params.property
 
-  # Mock it up
-  progress = 0
+  event.on 'objects', (count) -> task.update objects: count
 
-  emit_progress = ->
-    task = Task.find task.id
-    return unless task
-    return setTimeout emit_progress, 5000 unless task.status() is 'running'
+  event.on 'checkpoint', (count) ->
+    task.update current: count
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
 
-    progress += 10
+  event.on 'done', (count) ->
+    task.update current: count, progress: 100
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
+    task.destroy()
 
-    task.update progress: progress
+  event.on 'error', (error) -> console.error error
 
-    socket.io.sockets.in(req.app.path()).emit "progress", task.dump()
-
-    return setTimeout emit_progress, 5000 unless progress is 100
-    return task.destroy()
-
-  setTimeout emit_progress, 100
+  event.on 'halt', (error) ->
+    console.error error
+    task.status 'stopped'
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
 
   return res.send task.dump()
 
 exports.remove_index = (req, res) ->
   model = Recore.getModel req.params.model
   return res.send 404 unless model
-  ins = new model
-  property = ins.properties[req.params.property]
-  return res.send 400 unless property
-  return res.send 400 if property.index or property.unique
+  return res.send 400 unless req.params.property
 
   title = "Removing index on #{req.params.model}.#{req.params.property}"
   task = new Task model: req.params.model, title: title
 
-  # Mock it up
-  progress = 0
+  event = model.remove_index req.params.property
 
-  emit_progress = ->
-    task = Task.find task.id
-    return unless task
-    return setTimeout emit_progress, 5000 unless task.status() is 'running'
+  event.on 'objects', (count) -> task.update objects: count
 
-    progress += 10
+  event.on 'checkpoint', (count) ->
+    task.update current: count
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
 
-    task.update progress: progress
+  event.on 'done', (count) ->
+    task.update current: count, progress: 100
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
+    task.destroy()
 
-    socket.io.sockets.in(req.app.path()).emit "progress", task.dump()
+  event.on 'error', (error) -> console.error error
 
-    return setTimeout emit_progress, 5000 unless progress is 100
-    return task.destroy()
-
-  setTimeout emit_progress, 100
+  event.on 'halt', (error) ->
+    console.error error
+    task.status 'stopped'
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
 
   return res.send task.dump()
 
@@ -84,23 +77,7 @@ exports.remove_property = (req, res) ->
   title = "Removing property #{req.params.model}.#{req.params.property}"
   task = new Task model: req.params.model, title: title
 
-  # Mock it up
-  progress = 0
-
-  emit_progress = ->
-    task = Task.find task.id
-    return unless task
-    return setTimeout emit_progress, 5000 unless task.status() is 'running'
-
-    progress += 10
-
-    task.update progress: progress
-
-    socket.io.sockets.in(req.app.path()).emit "progress", task.dump()
-
-    return setTimeout emit_progress, 5000 unless progress is 100
-    return task.destroy()
-
-  setTimeout emit_progress, 100
-
+  #
+  # same as above plus hdel 
+  
   return res.send task.dump()

@@ -3,7 +3,7 @@ class RecordDelete extends Spine.Controller
   constructor: (record: @record, schema: @schema, modal: @modal) ->
     super
     @render()
-    @record.bind 'destroy', @destroy
+    @record.bind 'change', @destroy
 
     @modal.find(".modal-title").html "Deleting #{@schema.name.toLowerCase()} ##{@record.id}"
     @modal.find('.btn-default').css('display', 'inline-block').html "Cancel"
@@ -16,6 +16,7 @@ class RecordDelete extends Spine.Controller
     @record.destroy url: "#{base_uri}/record/#{@record.model}/#{@record.id}"
 
   destroy: =>
+    return unless @record.destroyed
     @navigate "/record/#{@schema.name}/page/#{@stack.record.page}"
     $('.modal').modal 'hide'
     Flash = app.require 'module flash'

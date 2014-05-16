@@ -60,6 +60,7 @@ class Schema extends Spine.Controller
     @modal.modal 'show'
 
   progress_report: (schema, data) =>
+    @task_init() unless @task_initialized
     return unless data.progress?
 
     if data.progress is 100
@@ -82,6 +83,7 @@ class Schema extends Spine.Controller
     @progress_text.html "#{text}"
 
   task_init: =>
+    return if @task_initialized
     @btn_dump.attr 'disabled', false
     @btn_play.attr 'disabled', false
     @btn_stop.attr 'disabled', false
@@ -97,6 +99,7 @@ class Schema extends Spine.Controller
     @progress.css 'display', 'block'
 
     @disable_actions()
+    @task_initialized = true
 
   task_done: =>
     @btn_dump.attr 'disabled', 'disabled'
@@ -105,6 +108,7 @@ class Schema extends Spine.Controller
     @btn_pause.attr 'disabled', 'disabled'
 
     @enable_actions()
+    @task_initialized = true
 
   disable_actions: =>
     @actions.find('.btn').attr 'disabled', 'disabled'
@@ -226,9 +230,9 @@ class Schema extends Spine.Controller
     @html @template('schema') schema: @schema, duration: @duration
 
     if @schema.task.id
+      @task_init()
       @progress_report(@schema, @schema.task.progress)
       @task_pause() if @schema.task.status is 'paused'
-      @disable_actions()
     @
 
 @app.exports['module schema'] = Schema

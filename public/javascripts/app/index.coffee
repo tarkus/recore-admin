@@ -39,6 +39,7 @@ class RecoreAdmin extends Spine.Controller
 
     @stage = new Stage
     @setStack @stage
+    @stage.sidebar = @sidebar
 
     @routes
       "/key_finder": =>
@@ -69,19 +70,20 @@ class RecoreAdmin extends Spine.Controller
         @stage.dashboard.active()
 
 $ ->
+  $.ajaxSetup cache: false
+
   app = new RecoreAdmin el: $("#wrapper")
   Spine.Route.setup()
   for name, model of Spine.Models
     model.url = "#{base_uri}/#{model.url}"
 
   window.init_socket = ->
-    @socket.on 'ack', (data) -> console.log data
-    @socket.emit 'new task', 'go home'
 
-    @socket.on 'progress', (data) ->
+    @socket.on 'task progress', (data) ->
       schema = Spine.Models['Schema'].findByAttribute 'name', data.model
       return unless schema
       schema.trigger 'progress', data
+
 
   window.App = app
 

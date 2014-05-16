@@ -36,8 +36,8 @@ class Task
     @update status: status
 
   update: (properties) =>
-    @touch()
     @set properties
+    @touch()
 
   touch: =>
     now = new Date().getTime()
@@ -54,7 +54,13 @@ class Task
       @properties.time_estimated = null
 
   set: (properties) =>
-    @properties[k] = v for k, v of properties
+    for key, value of properties
+      @properties[key] = value
+      if key is 'current' or key is 'objects'
+        if @properties.objects > 0
+          @properties.progress = Math.floor(@properties.current / @properties.objects) * 100
+    if @properties.progress is 100
+      @properties.status
 
   destroy: =>
     delete Task.tasks[@id]

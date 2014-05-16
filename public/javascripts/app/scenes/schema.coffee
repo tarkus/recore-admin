@@ -21,7 +21,7 @@ class Schema extends Spine.Controller
 
   createSchemas: (schemas) =>
     return unless @stack.swap.scene is 'schema'
-    @schema = schemas.pop()
+    @schema = schemas[0]
     view = new SchemaController schema: @schema
     @schema_view.html view.el
 

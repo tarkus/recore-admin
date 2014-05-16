@@ -25,59 +25,26 @@ exports.retrieve = (req, res) ->
     return res.send records if total is 0
 
     stop = Math.min total, stop
+    max  = Math.min total, per_page
 
-    # We're sorting on a field
-    unless field is 'id'
-      return model.sort
-        field: field
-        direction: direction
-        limit: [(page - 1) * per_page, per_page]
-      , (err, ids) ->
-        return res.status 500 if err
-        ids.forEach (id) ->
-          do (id) ->
-            model.load id, (err, props) ->
-              count++
-              return unless props
-              records.push
-                id: @id
-                model: model.modelName
-                total: total
-                range: [start, stop]
-                properties: props
-              return res.send records if count is per_page
-
-    # We're sorting on id
-    offset = (page - 1) * per_page
-
-    model.getClient().sort model.getIdsetsKey(), "limit", offset, per_page, direction, (err, ids) ->
+    return model.sort
+      field: field
+      direction: direction
+      limit: [(page - 1) * per_page, per_page]
+    , (err, ids) ->
       return res.status 500 if err
-      return res.send records if ids.length is 0
-
-      idx = 0
-      max = ids.length
-
-      fetch = ->
-        id = ids[idx]
-        model.load id, (err, props) ->
-          # If hit error will return 500
-          return res.status 500 if err and err isnt 'not found'
-          # If we got a record
-          if props
-            records.push
+      ids.forEach (id, idx) ->
+        do (id) ->
+          model.load id, (err, props) ->
+            count++
+            return unless props
+            records[idx] =
               id: @id
               model: model.modelName
               total: total
               range: [start, stop]
               properties: props
-
-          # If we got enough records or hit the bottem then it's done
-          return res.send records if idx + 1 is max
-          # Otherwise we iterate
-          idx++
-          return fetch()
-
-      return fetch()
+            return res.send records if count is max
 
 exports.create = (req, res) ->
   model = Recore.getModel req.body.model

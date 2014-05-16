@@ -59,7 +59,7 @@ exports.connect = (options) ->
   app.get "/record/:model/page/:page", routes.records.retrieve
 
   app.post "/record/:model", routes.records.update
-  app.put "/record/:model/:id", routes.records.update
+  app.put "/record/:model", routes.records.update
 
   app.del "/record/:model/:id", routes.records.destroy
   app.post "/record", routes.records.create
