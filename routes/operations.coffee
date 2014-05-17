@@ -77,7 +77,24 @@ exports.remove_property = (req, res) ->
   title = "Removing property #{req.params.model}.#{req.params.property}"
   task = new Task model: req.params.model, title: title
 
-  #
-  # same as above plus hdel 
-  
+  event = model.remove_property req.params.property
+
+  event.on 'objects', (count) -> task.update objects: count
+
+  event.on 'checkpoint', (count) ->
+    task.update current: count
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
+
+  event.on 'done', (count) ->
+    task.update current: count, progress: 100
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
+    task.destroy()
+
+  event.on 'error', (error) -> console.error error
+
+  event.on 'halt', (error) ->
+    console.error error
+    task.status 'stopped'
+    socket.io.sockets.in(req.app.path()).emit 'task progress', task.dump()
+
   return res.send task.dump()
