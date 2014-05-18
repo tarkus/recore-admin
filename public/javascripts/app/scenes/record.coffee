@@ -96,7 +96,7 @@ class Record extends Spine.Controller
     has_records = records.length > 0
     for name, value of @schema.properties
       if has_records and value.sortable
-        toggler = $('<span/>').addClass 'dropdown-toggle'
+        toggler = $('<div/>').addClass 'dropdown-toggle'
         toggler.attr 'data-toggle', 'dropdown'
         toggler.attr 'id', "th-dropdown-#{name}"
         toggler.html name
