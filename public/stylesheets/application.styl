@@ -33,6 +33,13 @@ body.modal-open
   span.fa
     margin-right: 3px
 
+.input-group-addon
+  cursor: pointer
+
+.dropdown-toggle
+  cursor: pointer
+
+
 #page-wrapper.stage
   overflow: auto
   min-height: 600px
@@ -214,6 +221,8 @@ body.modal-open
           &:hover
             td.record-id
               background-color: #fafafa
+            td.record-id-none
+              background-color: #fafafa
             td
               background-color: #FEF1E0
 
@@ -223,6 +232,9 @@ body.modal-open
           text-overflow: ellipsis
 
           &.record-id
+            background-color: #fafafa
+
+          &.record-id-none
             background-color: #fafafa
 
           /*
@@ -321,6 +333,9 @@ form
         max-width: 400px
         word-wrap: break-word
         font-family: monospace
+
+  .node-selection
+    margin-bottom: 16px
       
 .datepicker
   z-index: 10000 !important

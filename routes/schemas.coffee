@@ -34,7 +34,7 @@ exports.index = (req, res) ->
       unique: def.unique
       default_value: def.defaultValue
       _default_value: default_value
-      numeric_index: def.__numericIndex
+      sortable: def.__numericIndex
 
   if typeof ins.idGenerator is 'function'
     id_generator = '[Function]'

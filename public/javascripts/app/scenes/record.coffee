@@ -45,6 +45,7 @@ class Record extends Spine.Controller
 
     "click .modal.action .btn-primary": "submit"
 
+    "click .sort": "sort"
 
   constructor: ->
     super
@@ -62,13 +63,15 @@ class Record extends Spine.Controller
     SchemaModel.fetch url: "#{base_uri}/schema/#{@model}"
 
     @desc.html '&nbsp;'
-    @records_header.html ''
+
     @ids_header.html ''
-    @records.html ''
+    @records_header.html ''
+
     @ids.html ''
+    @records.html ''
+
     @pagination.html ''
     
-    @table_ids.css 'display', 'none'
     @btn_add.css 'display', 'none'
     @btn_view.css 'display', 'none'
     @btn_edit.css 'display', 'none'
@@ -86,22 +89,45 @@ class Record extends Spine.Controller
 
   createRecords: (records) =>
     @btn_add.css 'display', 'inline-block'
+
+    @ids_header.html "<tr><th>&nbsp;</th></tr>"
+
+    header = $("<tr/>")
+    has_records = records.length > 0
+    for name, value of @schema.properties
+      if has_records and value.sortable
+        toggler = $('<span/>').addClass 'dropdown-toggle'
+        toggler.attr 'data-toggle', 'dropdown'
+        toggler.attr 'id', "th-dropdown-#{name}"
+        toggler.html name
+        toggler.append '<span class="caret"></span>'
+        dropdown = $('<ul/>').addClass 'dropdown-menu'
+        dropdown.attr 'role', 'menu'
+        dropdown.append "<li><a class='sort' data-dir='ASC' data-field='#{name}' href='javascript: void(0);'>Ascending</a></li>"
+        dropdown.append "<li><a class='sort' data-dir='DESC' data-field='#{name}' href='javascript: void(0);'>Descending</a></li>"
+        div = $("<div/>").addClass 'dropdown'
+        div.append toggler
+        div.append dropdown
+        th = $("<th/>").append div
+        header.append th
+      else
+        header.append $("<th/>").html name
+    @records_header.html header
+
     if records.length is 0
       empty = new Empty
       @records.html empty.el
+
+      @ids.append "<tr><td class='record-id-none'>&nbsp;</td></tr>"
+
+      full_width = @table_container.width()
+      @table_records.width full_width - @table_ids.width() - 2
+
       @[@action](@schema.name) if @action
       return
 
     first = records[0]
     @paginate first
-
-    @table_ids.css 'display', 'inline-block'
-
-    header = $("<tr/>")
-    for name, value of @schema.properties
-      header.append $("<th/>").html name
-    @records_header.html header
-    @ids_header.html "<tr><th>&nbsp;</th></tr>"
 
     @desc.html "Showing #{first.range[0]}-#{first.range[1]} of #{first.total}" if first.range?
       
@@ -225,6 +251,13 @@ class Record extends Spine.Controller
     
   selectValue: (e) =>
     selectText e.target
+
+  sort: (e) =>
+    target = $(e.target)
+    @sort_field = target.data 'field'
+    @sort_direction = target.data 'dir'
+    @configure @model
+
 
   render: =>
     @replace @template("record_scene")

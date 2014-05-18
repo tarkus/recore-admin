@@ -4,6 +4,10 @@ Panel = @app.require 'module panel'
 class Dashboard extends Spine.Controller
   elements:
     ".widgets": "widgets"
+    ".node-selection input": "node_input"
+
+  events:
+    "click .node-selection .input-group-addon": "select_node"
 
   constructor: ->
     super
@@ -31,6 +35,14 @@ class Dashboard extends Spine.Controller
 
     for group, container of containers
       @widgets.append container
+
+  select_node: =>
+    node = @node_input.val()
+    return unless node
+    Widget.deleteAll()
+    Widget.fetch url: "#{base_uri}/stats?node=#{encodeURIComponent node}"
+    @widgets.html ''
+    
     
   render: =>
     @replace @template("dashboard")()

@@ -18,12 +18,19 @@ exports.index = (req, res) ->
       nodes: nodes
       servers: servers
 
-  random_index = Math.floor(Math.random() * (servers - 1))
-  random_server = server_list[random_index]
-  random_client = redism.clients[random_server]
-  random_client.info (err, raw) ->
+  unless req.query.node
+    random_index = Math.floor(Math.random() * (servers - 1))
+    node = server_list[random_index]
+  else
+    node = req.query.node
+    node = "redis://#{node}" unless node.indexOf('redis://') is 0
+
+  selected_client = redism.clients[node]
+  return res.send 404 unless selected_client
+
+  selected_client.info (err, raw) ->
     return res.status 500 if err
-    serverparts = url.parse(random_server)
+    serverparts = url.parse(node)
     keys = 0
     info = {}
     _info = {}
@@ -48,7 +55,7 @@ exports.index = (req, res) ->
       group: '2'
       content: info
 
-    random_client.slowlog 'get', 10, (err, slowlogs) ->
+    selected_client.slowlog 'get', 10, (err, slowlogs) ->
       return res.send 500 if err
       logs = []
       for log in slowlogs

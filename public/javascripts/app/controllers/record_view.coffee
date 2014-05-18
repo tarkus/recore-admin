@@ -13,6 +13,9 @@ class RecordView extends Spine.Controller
     @modal.find('.btn-primary').css "display", 'none'
     @modal.modal 'show'
 
+    @modal.on 'hide.bs.modal', =>
+      @navigate "/record/#{@schema.name}/page/#{@stack.record.page}"
+
   select: (e) =>
     selectText(e.target)
 
