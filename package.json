@@ -1,6 +1,6 @@
 {
   "name": "recore-admin",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Admin interface for Recore models",
   "main": "./node_modules/.bin/coffee index.coffee",
   "scripts": {
