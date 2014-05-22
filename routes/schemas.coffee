@@ -1,12 +1,10 @@
 Task   = require '../lib/task'
 Recore = null
 
-exports.setRecore = (recore) -> Recore = recore
+format_schema = exports.format_schema = (model) ->
+  error_handler = ->
+  resolve_handler = ->
 
-exports.index = (req, res) ->
-  return res.status 404 unless req.params.model
-  model = Recore.getModel req.params.model
-  return res.status 404 unless model
   task = {}
   properties = {}
   ins = new model
@@ -15,7 +13,6 @@ exports.index = (req, res) ->
     task = data.dump() if data.model is model.modelName
 
   for name, def of ins.properties
-    score = 0
     type = ""
     default_value = ""
 
@@ -43,15 +40,43 @@ exports.index = (req, res) ->
     id_generator = ins.idGenerator
 
   model.count (err, count) ->
-    return res.status 500 if err
-    return res.send
-      id: req.params.model
-      name: req.params.model
+    return error_handler() if err
+    return resolve_handler
+      id: model.modelName
+      name: model.modelName
       count: count
+      collection: model.isCollection
       id_generator: id_generator
       _id_generator: _id_generator ? ""
       properties: properties
       task: task
+
+  promise =
+    error: (func) ->
+      error_handler = func
+      promise
+
+    success: (func) ->
+      resolve_handler = func
+      promise
+
+  return promise
+
+exports.setRecore = (recore) -> Recore = recore
+
+exports.index = (req, res) ->
+  return res.send 404 unless req.params.model
+  if req.params.model.indexOf(":") is -1
+    model = Recore.getModel req.params.model
+  else
+    model = Recore.collections[req.params.model]
+  return res.send 404 unless model
+
+  format_schema model
+    .success (data) ->
+      res.app.locals.models[req.params.model] = data
+      res.send data
+    .error -> res.send 500
 
 exports.node = (req, res) ->
   res.send 200

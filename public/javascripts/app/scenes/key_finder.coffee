@@ -16,7 +16,7 @@ class KeyFinder extends Spine.Controller
     @result.html ''
     self = @
     $.ajax
-      url: "#{base_uri}/key_finder"
+      url: "#{base_uri}/util/key_finder"
       type: 'POST'
       data:
         key: @key_input.val()

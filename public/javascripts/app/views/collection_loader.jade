@@ -1,0 +1,33 @@
+.collection_loader.container
+  .row
+    .col-lg-12
+      h1.page-header
+        | Collection Loader
+  
+  .row
+    .col-lg-12
+      .well
+        form
+
+          .form-group
+            select.select-model.form-control
+              option Select model
+              - for model, name in models
+                option(value="#{name}") #{name}
+
+          .form-group
+            .input-group
+              input.form-control(type="text" name="key" placeholder="Key" autocomplete="off")
+              .input-group-addon
+                span.fa.fa-play
+
+          .form-group
+            button.btn.btn-warning(type="submit") Load
+
+        .result
+          
+            
+
+
+
+      

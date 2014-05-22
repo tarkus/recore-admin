@@ -11,7 +11,13 @@ exports.retrieve = (req, res) ->
   direction = req.query.direction or 'DESC'
   direction = direction.toUpperCase()
   field = req.query.sort_on or 'id'
-  model = Recore.getModel req.params.model
+
+  if req.params.model.indexOf(":") is -1
+    model = Recore.getModel req.params.model
+  else
+    model = Recore.collections[req.params.model]
+
+  return res.status 404 unless model
 
   start = (page - 1) * per_page + 1
   stop = start + per_page - 1

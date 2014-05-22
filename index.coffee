@@ -27,15 +27,14 @@ exports.connect = (options) ->
   app.locals.title = "Recore Backend"
   app.locals.subtitle = options.title
 
-  app.locals.count = {}
-  app.locals.models = []
+  app.locals.models = {}
 
   for name, model of Recore.getModels()
+    app.locals.models[name] = { name: name, collection: model.isCollection }
     do (name, model) ->
-      app.locals.models.push name
       model.count (err, count) ->
         return if err
-        app.locals.count[name] = count
+        app.locals.models[name].count = count
 
   app.set 'view engine', 'jade'
   app.set 'views', "#{__dirname}/views"
@@ -56,20 +55,21 @@ exports.connect = (options) ->
 
   app.use logger("dev")
 
-  app.get "/record/:model/page/:page", routes.records.retrieve
+  app.get  "/record/:model/page/:page", routes.records.retrieve
 
   app.post "/record/:model", routes.records.update
-  app.put "/record/:model", routes.records.update
+  app.put  "/record/:model", routes.records.update
 
-  app.del "/record/:model/:id", routes.records.destroy
+  app.del  "/record/:model/:id", routes.records.destroy
   app.post "/record", routes.records.create
 
-  app.get "/schema/:model", routes.schemas.index
+  app.get  "/schema/:model", routes.schemas.index
 
-  app.get "/stats", routes.stats.index
-  app.get "/stats/:node", routes.stats.node
+  app.get  "/stats", routes.stats.index
+  app.get  "/stats/:node", routes.stats.node
 
-  app.post "/key_finder", routes.misc.key_finder
+  app.post "/util/key_finder", routes.misc.key_finder
+  app.get  "/util/collection_loader", routes.misc.collection_loader
 
   app.get "/create_index/:model/:property", routes.operations.create_index
   app.get "/remove_index/:model/:property", routes.operations.remove_index
@@ -80,7 +80,8 @@ exports.connect = (options) ->
   app.get "/task/resume/:id", routes.tasks.resume
   app.get "/task/dump/:id", routes.tasks.dump
 
-  app.get "/", static_view 'layout'
+  app.get "/", static_view 'layout', filter: (html) ->
+    html.replace '{models}', JSON.stringify app.locals.models
 
   app.use errorHandler()
 

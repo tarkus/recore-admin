@@ -6,6 +6,7 @@ Dashboard  = @app.require 'scene dashboard'
 Schema     = @app.require 'scene schema'
 Record     = @app.require 'scene record'
 KeyFinder  = @app.require 'scene key finder'
+CollectionLoader = @app.require 'scene collection loader'
 
 class Stage extends Spine.Stack
   className: "stage"
@@ -15,6 +16,7 @@ class Stage extends Spine.Stack
     record: Record
     schema: Schema
     key_finder: KeyFinder
+    collection_loader: CollectionLoader
 
   constructor: ->
     @el = $("<div id='page-wrapper'/>").addClass(@className).appendTo($("#wrapper")) unless @el?
@@ -44,6 +46,9 @@ class RecoreAdmin extends Spine.Controller
     @routes
       "/key_finder": =>
         @stage.key_finder.active()
+
+      "/collection_loader": =>
+        @stage.collection_loader.active()
 
       "/schema/:name": (params) =>
         @stage.schema.configure(params.name)

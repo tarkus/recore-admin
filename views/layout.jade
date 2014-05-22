@@ -23,8 +23,7 @@ html
       var base_uri = "#{base_uri}";
       var title = "#{title}";
       var subtitle = "#{subtitle}";
-      var models = !{JSON.stringify(models)};
-      var count = !{JSON.stringify(count)};
+      var models = {models};
 
     script(src="#{base_uri}#{templates.app.all.src}")
     script(src="#{base_uri}/components/allmixedup/moment.min.js")
@@ -34,8 +33,6 @@ html
 
   body
     #wrapper
-
-  script(src="#{base_uri}/validator.js")
 
   script.
 

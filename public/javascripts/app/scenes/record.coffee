@@ -13,7 +13,7 @@ RecordDelete = @app.require 'module record delete'
 class Record extends Spine.Controller
 
   elements:
-    ".page-header": "title"
+    ".page-header .title": "title"
     ".modal.detail": "detail_modal"
     ".modal.action": "action_modal"
     ".panel-heading": "desc"
@@ -31,6 +31,8 @@ class Record extends Spine.Controller
     ".btn.delete": "btn_delete"
 
   events:
+    "click .page-header button.reload": "reload"
+
     "click .record-value": "detail"
 
     "click .record-id": "selectRow"
@@ -152,6 +154,10 @@ class Record extends Spine.Controller
       per_page: @per_page
       path: "#/record/#{@model}"
     @pagination.html pager.el
+
+  reload: =>
+    @configure @model, @page
+
 
   showAddModal: =>
     @navigate "/record/#{@schema.name}/add"
