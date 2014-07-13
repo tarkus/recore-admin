@@ -6,8 +6,7 @@ class Task
 
   @all: => @tasks
 
-  @find: (id) =>
-    @tasks[id]
+  @find: (id) => @tasks[id]
 
   @max_error_count: 10
 
@@ -22,22 +21,21 @@ class Task
       current: 0
       objects: 0
       progress: 0
-      updated_at: new Date().getTime()
-      started_at: new Date().getTime()
+      updated_at: Date.now()
+      started_at: Date.now()
       time_elapsed: 0
       time_estimated: null
 
-
     Task.tasks[@id] = @
-    @
+    return @
 
   status: (status) =>
     return @properties.status unless status?
     @update status: status
 
   update: (properties) =>
-    @touch()
     @set properties
+    @touch()
 
   touch: =>
     now = new Date().getTime()
@@ -54,7 +52,14 @@ class Task
       @properties.time_estimated = null
 
   set: (properties) =>
-    @properties[k] = v for k, v of properties
+    for key, value of properties
+      @properties[key] = value
+      if key is 'current' or key is 'objects'
+        if @properties.objects > 0
+          @properties.progress = Math.floor(@properties.current / @properties.objects) * 100
+    if @properties.progress is 100
+      @properties.status
+
 
   destroy: =>
     delete Task.tasks[@id]

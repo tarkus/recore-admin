@@ -1,15 +1,32 @@
-Recore = null
+module.exports = (recore) ->
 
-exports.setRecore = (recore) -> Recore = recore
+  finder: (req, res) ->
+    key = req.body.key
+    return res.send 400 unless key
+    
+    if recore.getClient().shardable
+      node = recore.getClient().nodeFor? key
+    else
+      node = recore.getClient()
 
-exports.key_finder = (req, res) ->
-  key = req.body.key
-  return res.send 400 unless key
+    res.send node
+    
+  loader: (req, res) ->
+    console.log "?!?!"
+    model_name = req.query.model
+    key = req.query.key
+    return res.send 400 unless key and model_name
   
-  if Recore.getClient().shardable
-    node = Recore.getClient().nodeFor? key
-  else
-    node = Recore.getClient()
+    model = recore.getModel model_name
 
-  res.send node
-  
+    return res.send 404 unless model
+
+    collection = model.collection key
+
+    return res.send 404 unless collection
+
+    (require './schemas')(recore).format_schema collection
+      .success (data) ->
+        res.app.locals.models[model_name] = data
+        res.send data
+      .error -> res.send 500

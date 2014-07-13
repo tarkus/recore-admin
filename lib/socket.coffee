@@ -3,11 +3,6 @@ _ = require 'lodash'
 io = exports.io = null
 app = null
 
-options =
-  path: ''
-  script: '/init_socket.js'
-  resource: 'socket.io'
-
 init_script = (resource) -> """
   var socket = null;
   (function(){
@@ -23,42 +18,57 @@ init_script = (resource) -> """
   })();
 """
 
-exports.bind = (_app, _options) ->
-  app = _app
-  options = _.extend options, _options
-  exports
+class Socket
+  
+  io: null
+  app: null
 
-exports.use = (_io, callback) ->
-  io = exports.io = _io
-  configure callback
+  options:
+    path: ''
+    prefix: ''
+    script: '/socket.js'
+    resource: 'socket.io'
 
-exports.listen = (server, callback) ->
-  throw new Error 'no app no fun' unless app
-  options.path = app.path() unless options.path
-  options.resource = "#{options.path}/#{options.resource}" if options.path
+  constructor: (@app, options) ->
+    @app = app
+    @options = _.extend @options, options
 
-  io = exports.io = require('socket.io').listen server
-  io.enable 'browser client minification'
-  io.enable 'browser client cache'
-  io.enable 'browser client etag'
-  io.enable 'browser client gzip'
-  io.set 'log level', 1
-  io.set 'resource', options.resource
-  configure callback
+  # Use a intialized socket.io instance
+  use: (io, callback) ->
+    @io = io
+    @configure callback
 
-configure = (callback) ->
-  throw new Error 'no app no fun' unless app
-  client_resource = "#{options.resource.replace(/^\//, '')}"
+  # Create a new socket.io and listen on the server
+  listen: (server, callback) ->
+    @options.path = @app.path() unless @options.path
+    @options.resource = "#{@options.path}/#{@options.resource}" if @options.path
 
-  app.get options.script, (req, res) ->
-    res.type "text/javascript"
-    res.send init_script(client_resource)
+    # TODO
+    #   Deprecated in socket.io@1.0
+    @io = require('socket.io').listen server
+    @io.enable 'browser client minification'
+    @io.enable 'browser client cache'
+    @io.enable 'browser client etag'
+    @io.enable 'browser client gzip'
+    @io.set 'log level', 1
+    @io.set 'resource', resource
 
-  io.on 'connection', (socket) ->
+    @configure callback
 
-    socket.join options.path
-    socket.on 'new task', (data) ->
-      socket.emit 'ack', data
+  configure: (callback) ->
+    throw new Error 'no app no fun' unless @app
 
-  callback? io
+    resource = "#{@options.resource.replace(/^\//, '')}"
 
+    @app.get @options.script, (req, res) =>
+      res.type "text/javascript"
+      res.send init_script(resource)
+
+    @io.on 'connection', (socket) =>
+      socket.join @app.locals.title
+      socket.on 'new task', (data) ->
+        socket.emit 'ack', data
+
+    callback? @io
+
+module.exports = Socket

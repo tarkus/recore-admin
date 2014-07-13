@@ -1,6 +1,10 @@
-exports.schemas     = require './schemas'
-exports.records     = require './records'
-exports.operations  = require './operations'
-exports.stats       = require './stats'
-exports.tasks       = require './tasks'
-exports.misc        = require './misc'
+exports.use = (recore) ->
+  exports.schemas     = (require './schemas') recore
+  exports.records     = (require './records') recore
+  exports.operations  = (require './operations') recore
+  exports.stats       = (require './stats') recore
+  exports.tasks       = (require './tasks') recore
+  exports.misc        = (require './misc') recore
+  
+
+

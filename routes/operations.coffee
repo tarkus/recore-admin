@@ -1,106 +1,97 @@
-socket = require '../lib/socket'
 Task   = require '../lib/task'
 
-Recore = null
+module.exports = (recore) ->
 
-exports.setRecore = (recore) -> Recore = recore
+  create_index: (req, res) ->
+    model = recore.getModel req.params.model
+    return res.send 404 unless model
+    ins = new model
+    property = ins.properties[req.params.property]
+    return res.send 400 unless property and (property.index or property.unique)
 
-exports.create_index = (req, res) ->
-  model = Recore.getModel req.params.model
-  return res.send 404 unless model
-  ins = new model
-  property = ins.properties[req.params.property]
-  return res.send 400 unless property and (property.index or property.unique)
+    title = "Indexing on #{req.params.model}.#{req.params.property}"
+    task = new Task model: req.params.model, title: title
 
-  title = "Indexing on #{req.params.model}.#{req.params.property}"
-  task = new Task model: req.params.model, title: title
+    event = model.create_index req.params.property
 
-  ###
-  page = 0
-  per_page = 1000
-  Recore.getClient().sort model.getIdsKey(), 'limit', page * per_page, per_page, 'asc', (err, ids) ->
-  ###
+    event.on 'objects', (count) -> task.update objects: count
 
-  # Mock it up
-  progress = 0
+    event.on 'checkpoint', (count) ->
+      task.update current: count
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
 
-  emit_progress = ->
-    task = Task.find task.id
-    return unless task
-    return setTimeout emit_progress, 5000 unless task.status() is 'running'
+    event.on 'done', (count) ->
+      task.update current: count, progress: 100
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
+      task.destroy()
 
-    progress += 10
+    event.on 'error', (error) -> console.error error
 
-    task.update progress: progress
+    event.on 'halt', (error) ->
+      console.error error
+      task.status 'stopped'
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
 
-    socket.io.sockets.in(req.app.path()).emit "progress", task.dump()
+    return res.send task.dump()
 
-    return setTimeout emit_progress, 5000 unless progress is 100
-    return task.destroy()
+  remove_index: (req, res) ->
+    model = recore.getModel req.params.model
+    return res.send 404 unless model
+    return res.send 400 unless req.params.property
 
-  setTimeout emit_progress, 100
+    title = "Removing index on #{req.params.model}.#{req.params.property}"
+    task = new Task model: req.params.model, title: title
 
-  return res.send task.dump()
+    event = model.remove_index req.params.property
 
-exports.remove_index = (req, res) ->
-  model = Recore.getModel req.params.model
-  return res.send 404 unless model
-  ins = new model
-  property = ins.properties[req.params.property]
-  return res.send 400 unless property
-  return res.send 400 if property.index or property.unique
+    event.on 'objects', (count) -> task.update objects: count
 
-  title = "Removing index on #{req.params.model}.#{req.params.property}"
-  task = new Task model: req.params.model, title: title
+    event.on 'checkpoint', (count) ->
+      task.update current: count
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
 
-  # Mock it up
-  progress = 0
+    event.on 'done', (count) ->
+      task.update current: count, progress: 100
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
+      task.destroy()
 
-  emit_progress = ->
-    task = Task.find task.id
-    return unless task
-    return setTimeout emit_progress, 5000 unless task.status() is 'running'
+    event.on 'error', (error) -> console.error error
 
-    progress += 10
+    event.on 'halt', (error) ->
+      console.error error
+      task.status 'stopped'
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
 
-    task.update progress: progress
+    return res.send task.dump()
 
-    socket.io.sockets.in(req.app.path()).emit "progress", task.dump()
+  remove_property: (req, res) ->
+    model = recore.getModel req.params.model
+    return res.send 404 unless model
+    ins = new model
+    property = ins.properties[req.params.property]
+    return res.send 400 if property
 
-    return setTimeout emit_progress, 5000 unless progress is 100
-    return task.destroy()
+    title = "Removing property #{req.params.model}.#{req.params.property}"
+    task = new Task model: req.params.model, title: title
 
-  setTimeout emit_progress, 100
+    event = model.remove_property req.params.property
 
-  return res.send task.dump()
+    event.on 'objects', (count) -> task.update objects: count
 
-exports.remove_property = (req, res) ->
-  model = Recore.getModel req.params.model
-  return res.send 404 unless model
-  ins = new model
-  property = ins.properties[req.params.property]
-  return res.send 400 if property
+    event.on 'checkpoint', (count) ->
+      task.update current: count
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
 
-  title = "Removing property #{req.params.model}.#{req.params.property}"
-  task = new Task model: req.params.model, title: title
+    event.on 'done', (count) ->
+      task.update current: count, progress: 100
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
+      task.destroy()
 
-  # Mock it up
-  progress = 0
+    event.on 'error', (error) -> console.error error
 
-  emit_progress = ->
-    task = Task.find task.id
-    return unless task
-    return setTimeout emit_progress, 5000 unless task.status() is 'running'
+    event.on 'halt', (error) ->
+      console.error error
+      task.status 'stopped'
+      req.app.socket.io.sockets.in(req.app.locals.title).emit 'task progress', task.dump()
 
-    progress += 10
-
-    task.update progress: progress
-
-    socket.io.sockets.in(req.app.path()).emit "progress", task.dump()
-
-    return setTimeout emit_progress, 5000 unless progress is 100
-    return task.destroy()
-
-  setTimeout emit_progress, 100
-
-  return res.send task.dump()
+    return res.send task.dump()

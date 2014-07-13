@@ -1,99 +1,92 @@
 express      = require 'express'
-favicon      = require 'serve-favicon'
 compress     = require 'compression'
 bodyParser   = require 'body-parser'
 cookieParser = require 'cookie-parser'
 errorHandler = require 'errorhandler'
-session      = require 'express-session'
 logger       = require 'morgan'
-assets       = require 'connect-assets'
-webapp_view  = require 'express-webapp-view'
-static_view  = require 'express-static-view'
 assert       = require 'assert'
+routes       = require './routes'
+Socket       = require './lib/socket'
 
-socket = exports.socket = require './lib/socket'
+class RecoreAdmin
 
-exports.connect = (options) ->
-  Recore = options.recore
-  assert Recore, "recore instance required"
+  constructor: (@options) ->
+    assert @options.recore, "recore instance required"
+    assert @options.title, "title required"
+    @recore = @options.recore
 
-  app = express()
-  socket.bind app
+    @app = app = express()
 
-  routes = require './routes'
-  mod.setRecore Recore for name, mod of routes
+    @app.socket = new Socket @app
 
-  app.locals.tasks = []
-  app.locals.title = "Recore Backend"
-  app.locals.subtitle = options.title
+    @routes = routes.use @recore
 
-  app.locals.count = {}
-  app.locals.models = []
+    @app.locals.title = @options.title
+    @app.locals.base_uri = '/'
+    @app.locals.tasks = []
+    @app.locals.models = {}
 
-  for name, model of Recore.getModels()
-    do (name, model) ->
-      app.locals.models.push name
-      model.count (err, count) ->
-        return if err
-        app.locals.count[name] = count
+    for name, model of @recore.getModels()
+      @app.locals.models[name] = name: name, collection: model.isCollection
+      locals = @app.locals
+      do (name, model) ->
+        model.count (error, count) ->
+          locals.models[name].count = count unless error
 
-  app.set 'view engine', 'jade'
-  app.set 'views', "#{__dirname}/views"
+    @app.use logger("dev") if @app.get('env') isnt 'production'
 
-  app.use favicon "#{__dirname}/public/images/favicon.png"
-  app.use compress()
-  app.use express.static "#{__dirname}/public"
+    @app.use compress()
+    @app.use bodyParser.json()
+    @app.use bodyParser.urlencoded extended: true
+    @app.use cookieParser()
 
-  app.use bodyParser.json()
-  app.use bodyParser.urlencoded()
-  app.use cookieParser()
+    @app.use @recore.connect url: "/validator.js", namespace: 'validator'
+    @app.use '/bootstrap.js', (req, res, next) ->
+      res.type 'text/javascript'
+      res.send """
+        var base_uri = "#{req.app.locals.base_uri}";
+        var title = "#{req.app.locals.title}";
+        var models = #{JSON.stringify(req.app.locals.models)};
+      """
 
-  app.use session secret: "lj2l34j;2l1jofupojlk12n34"
+    @app.use express.static "#{__dirname}/node_modules/recore-admin-ui/public"
 
-  app.use Recore.connect
-    url: "/validator.js"
-    namespace: 'validator'
 
-  app.use logger("dev")
+    # Routes
+    @app.get "/record/:model/page/:page", routes.records.retrieve
 
-  app.get "/record/:model/page/:page", routes.records.retrieve
+    @app.post "/record/:model", routes.records.update
+    @app.put  "/record/:model", routes.records.update
 
-  app.post "/record/:model", routes.records.update
-  app.put "/record/:model/:id", routes.records.update
+    @app.del "/record/:model/:id", routes.records.destroy
+    @app.post "/record", routes.records.create
 
-  app.del "/record/:model/:id", routes.records.destroy
-  app.post "/record", routes.records.create
+    @app.get "/schema/:model", routes.schemas.index
 
-  app.get "/schema/:model", routes.schemas.index
+    @app.get "/stats", routes.stats.index
+    @app.get "/stats/:node", routes.stats.node
 
-  app.get "/stats", routes.stats.index
-  app.get "/stats/:node", routes.stats.node
+    @app.post "/util/finder", routes.misc.finder
+    @app.get  "/util/loader", routes.misc.loader
 
-  app.post "/key_finder", routes.misc.key_finder
+    @app.get "/create_index/:model/:property", routes.operations.create_index
+    @app.get "/remove_index/:model/:property", routes.operations.remove_index
+    @app.get "/remove_property/:model/:property", routes.operations.remove_property
 
-  app.get "/create_index/:model/:property", routes.operations.create_index
-  app.get "/remove_index/:model/:property", routes.operations.remove_index
-  app.get "/remove_property/:model/:property", routes.operations.remove_property
+    @app.get "/task/stop/:id", routes.tasks.stop
+    @app.get "/task/pause/:id", routes.tasks.pause
+    @app.get "/task/resume/:id", routes.tasks.resume
+    @app.get "/task/dump/:id", routes.tasks.dump
 
-  app.get "/task/stop/:id", routes.tasks.stop
-  app.get "/task/pause/:id", routes.tasks.pause
-  app.get "/task/resume/:id", routes.tasks.resume
-  app.get "/task/dump/:id", routes.tasks.dump
+    @app.get "/", (req, res, next) ->
+      res.sendfile "#{__dirname}/node_modules/recore-admin-ui/public/index.html"
 
-  app.get "/", static_view 'layout'
+    @app.use errorHandler() unless @app.get 'env' is 'deveopment'
 
-  app.use errorHandler()
+    @app.on 'mount', (parent) ->
+      app.locals.base_uri = app.path()
 
-  app.on 'mount', (parent) ->
-    app.locals.base_uri = app.path()
+    return @app
 
-    app.use assets
-      src: "#{__dirname}/public"
-      helperContext: app.locals
-      servePath: app.path()
 
-    app.use "/templates", webapp_view.connect
-      apps: 'app', webroot: "#{__dirname}/public/javascripts"
-      context: app.locals
-
-  return app
+module.exports = RecoreAdmin
