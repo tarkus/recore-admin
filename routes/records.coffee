@@ -34,8 +34,8 @@ module.exports = (recore) ->
         direction: direction
         limit: [(page - 1) * per_page, per_page]
       , (err, ids) ->
-        max = Math.min ids.length, per_page
         return res.send 500 if err
+        max = Math.min ids.length, per_page
         return res.send records if max is 0
         ids.forEach (id, idx) ->
           do (id) ->
