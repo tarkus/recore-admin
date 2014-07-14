@@ -31,7 +31,7 @@ format_schema = (model) ->
       unique: def.unique
       default_value: def.defaultValue
       _default_value: default_value
-      sortable: def.__numericIndex
+      sortable: def.index and def.__numericIndex
 
   if typeof ins.idGenerator is 'function'
     id_generator = '[Function]'
