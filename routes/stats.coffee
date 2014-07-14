@@ -27,7 +27,7 @@ module.exports = (recore) ->
     return res.send 404 unless selected_client
 
     selected_client.info (err, raw) ->
-      return res.status 500 if err
+      return res.send 500 if err
       serverparts = url.parse(node)
       keys = 0
       info = {}

@@ -1,7 +1,7 @@
 module.exports = (recore) ->
 
   retrieve: (req, res) ->
-    return res.status 404 unless req.params.model
+    return res.send 404 unless req.params.model
     step = 10
     page = req.params.page or 1
     per_page = Math.min req.query.per_page or 30, 100
@@ -14,7 +14,7 @@ module.exports = (recore) ->
     else
       model = recore.collections[req.params.model]
 
-    return res.status 404 unless model
+    return res.send 404 unless model
 
     start = (page - 1) * per_page + 1
     stop = start + per_page - 1
@@ -22,7 +22,7 @@ module.exports = (recore) ->
     records = []
 
     model.getClient().scard model.getIdsetsKey(), (err, total) ->
-      return res.status 500 if err
+      return res.send 500 if err
       total ?= 0
       total = parseInt(total)
       return res.send records if total is 0
@@ -35,7 +35,7 @@ module.exports = (recore) ->
         direction: direction
         limit: [(page - 1) * per_page, per_page]
       , (err, ids) ->
-        return res.status 500 if err
+        return res.send 500 if err
         ids.forEach (id, idx) ->
           do (id) ->
             model.load id, (err, props) ->
