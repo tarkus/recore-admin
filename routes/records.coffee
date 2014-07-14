@@ -7,7 +7,7 @@ module.exports = (recore) ->
     per_page = Math.min req.query.per_page or 30, 100
     direction = req.query.direction or 'DESC'
     direction = direction.toUpperCase()
-    field = req.query.sort_on or 'id'
+    field = req.query.field or 'id'
 
     if req.params.model.indexOf(":") is -1
       model = recore.getModel req.params.model
@@ -28,13 +28,13 @@ module.exports = (recore) ->
       return res.send records if total is 0
 
       stop = Math.min total, stop
-      max  = Math.min total, per_page
 
       return model.sort
         field: field
         direction: direction
         limit: [(page - 1) * per_page, per_page]
       , (err, ids) ->
+        max = Math.min ids.length, per_page
         return res.send 500 if err
         ids.forEach (id, idx) ->
           do (id) ->
