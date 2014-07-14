@@ -36,6 +36,7 @@ module.exports = (recore) ->
       , (err, ids) ->
         max = Math.min ids.length, per_page
         return res.send 500 if err
+        return res.send records if max is 0
         ids.forEach (id, idx) ->
           do (id) ->
             model.load id, (err, props) ->
@@ -53,7 +54,9 @@ module.exports = (recore) ->
     model = recore.getModel req.body.model
     return 404 unless model?
     ins = new model
-    ins.prop req.body.properties
+    for key, value of req.body.properties
+      continue unless value.toString().length > 0
+      ins.prop key, value
     ins.save (err) ->
       return res.send 400, @errors if err
       return res.send [
@@ -76,7 +79,9 @@ module.exports = (recore) ->
 
     find_or_create (err, props) ->
       return res.send 500 if err
-      @prop req.body.properties
+      for key, value of req.body.properties
+        continue unless value.toString().length > 0
+        @prop key, value
       @save (err) ->
         return res.send 400, @errors if err
         return res.send [
