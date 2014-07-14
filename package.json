@@ -30,7 +30,7 @@
     "express": "^4.1.1",
     "lodash": "^2.4.1",
     "morgan": "^1.0.1",
-    "recore-admin-ui": "^0.4.22",
+    "recore-admin-ui": ">=0.4.22",
     "socket.io": "^1.0.6"
   },
   "devDependencies": {
