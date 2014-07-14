@@ -1,6 +1,6 @@
 {
   "name": "recore-admin",
-  "version": "0.4.6",
+  "version": "0.4.61",
   "description": "Admin interface for Recore models",
   "main": "./node_modules/.bin/coffee index.coffee",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "keywords": [
     "redis",
-    "reco"
+    "recore"
   ],
   "author": "Tarkus Liu <tarkus.nnkh@gmail.com>",
   "license": "ISC",
@@ -25,8 +25,10 @@
     "coffee-script": "^1.7.1",
     "compression": "^1.0.2",
     "cookie-parser": "^1.0.1",
+    "cuid": "^1.2.4",
     "errorhandler": "^1.0.1",
     "express": "^4.1.1",
+    "lodash": "^2.4.1",
     "morgan": "^1.0.1",
     "recore-admin-ui": "^0.4.13",
     "socket.io": "^1.0.6"
