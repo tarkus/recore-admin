@@ -58,7 +58,7 @@ class RecoreAdmin
     @app.post "/record/:model", routes.records.update
     @app.put  "/record/:model", routes.records.update
 
-    @app.del "/record/:model/:id", routes.records.destroy
+    @app.delete "/record/:model/:id", routes.records.destroy
     @app.post "/record", routes.records.create
 
     @app.get "/schema/:model", routes.schemas.index
