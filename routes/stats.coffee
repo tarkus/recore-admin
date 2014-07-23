@@ -5,7 +5,7 @@ module.exports = (recore) ->
   index: (req, res) ->
     stats = []
     redism = recore.getClient()
-    nodes = redism.client_list.length
+    nodes = redism.node_list.length
     server_list = Object.keys(redism.server_list)
     servers = server_list.length
 
@@ -17,8 +17,8 @@ module.exports = (recore) ->
         servers: servers
 
     unless req.query.node
-      random_index = Math.floor(Math.random() * (servers - 1))
-      node = server_list[random_index]
+      random_index = Math.floor(Math.random() * (nodes - 1))
+      node = redism.node_list[random_index]
     else
       node = req.query.node
       node = "redis://#{node}" unless node.indexOf('redis://') is 0

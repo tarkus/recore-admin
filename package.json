@@ -1,6 +1,6 @@
 {
   "name": "recore-admin",
-  "version": "0.4.78",
+  "version": "0.4.79",
   "description": "Admin interface for Recore models",
   "main": "./node_modules/.bin/coffee index.coffee",
   "scripts": {
@@ -30,7 +30,7 @@
     "express": "^4.1.1",
     "lodash": "^2.4.1",
     "morgan": "^1.0.1",
-    "recore-admin-ui": ">=0.4.31",
+    "recore-admin-ui": ">=0.4.32",
     "socket.io": "^1.0.6"
   },
   "devDependencies": {
