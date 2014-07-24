@@ -23,7 +23,7 @@ module.exports = (recore) ->
       node = req.query.node
       node = "redis://#{node}" unless node.indexOf('redis://') is 0
 
-    selected_client = redism.clients[node]
+    selected_client = redism.getNode node
     return res.send 404 unless selected_client
 
     selected_client.info (err, raw) ->
